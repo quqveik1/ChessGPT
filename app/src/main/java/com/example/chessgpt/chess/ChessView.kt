@@ -1,10 +1,8 @@
 package com.example.chessgpt.chess
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.ColorSpace.Rgb
 import android.graphics.Paint
 import android.graphics.Point
 import android.graphics.PointF
@@ -49,12 +47,34 @@ class ChessView : View{
         blackFigurePaint.textSize = chessPixelSize!!.height * textCellPercentage;
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
+    override fun onTouchEvent(event: MotionEvent?): Boolean
+    {
         when (event?.action) {
             MotionEvent.ACTION_UP -> {
                 val pos:Point = getRectPosFromPix(Point(event.x.toInt(), event.y.toInt()))
                 Toast.makeText(context, pos.toString(), Toast.LENGTH_SHORT).show()
-                possibleMoves = chessBoard.getPossibleMoves(pos)
+                if(pos != lastClickedPos)
+                {
+                    if(lastClickedPos != null)
+                    {
+                        val canMove = chessBoard.canMove(possibleMoves, pos)
+
+                        if(canMove)
+                        {
+                            chessBoard.move(lastClickedPos!!, pos)
+                            possibleMoves = ArrayList()
+                            lastClickedPos = null
+                            return true
+                        }
+                    }
+                    possibleMoves = chessBoard.getPossibleMoves(pos)
+                    lastClickedPos = pos;
+                }
+                else
+                {
+                    possibleMoves = ArrayList()
+                    lastClickedPos = null
+                }
 
                 return true
             }
@@ -63,13 +83,51 @@ class ChessView : View{
     }
 
     var possibleMoves: ArrayList<Point> = ArrayList()
-    
+        set(value) {
+            field = value
+            invalidate()
+        }
+    var lastClickedPos: Point? = null
+    val possibleMovesColor = Color.GREEN
+    val possibleMovesRPercantage = 0.3;
+    val possibleMovesPaint = Paint().apply {
+        color = possibleMovesColor
+    }
+
+
+    private fun drawPossibleMoves(canvas: Canvas?)
+    {
+        val pixR = chessPixelSize!!.height * possibleMovesRPercantage
+
+        for(i in possibleMoves)
+        {
+            val rectF = calcRect(i)
+
+            val midPointF = getRectMid(rectF)
+
+            canvas?.drawCircle(midPointF.x, midPointF.y, pixR.toFloat(), possibleMovesPaint)
+        }
+    }
+
+    companion object
+    {
+        fun getRectMid(rect: RectF) : PointF
+        {
+            val midPointF: PointF = PointF(
+                (rect.left + rect.right)/2,
+                (rect.top + rect.bottom)/2
+            )
+
+            return midPointF
+        }
+    }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
         drawNet(canvas)
         drawChess(canvas)
+        drawPossibleMoves(canvas)
     }
 
     private val whiteFigureColor = Color.WHITE;
@@ -77,9 +135,11 @@ class ChessView : View{
 
     private var whiteFigurePaint: Paint = Paint().apply {
         color = whiteFigureColor
+        textAlign = Paint.Align.CENTER
     }
     private var blackFigurePaint: Paint = Paint().apply {
         color = blackFigureColor
+        textAlign = Paint.Align.CENTER
     }
 
     private val textCellPercentage: Float = 0.6F
@@ -92,10 +152,7 @@ class ChessView : View{
             {
                 //chessBoard.board[x][y];
                 val textRectF: RectF = calcRect(Point(x, y))
-                val midPointF: PointF = PointF(
-                    (textRectF.left + textRectF.right)/2,
-                    (textRectF.top + textRectF.bottom)/2
-                )
+                val midPointF: PointF = getRectMid(textRectF)
 
                 if(chessBoard.board[x][y]?.isWhite == true)
                 {

@@ -1,6 +1,7 @@
 package com.example.chessgpt.chess
 
 import android.graphics.Point
+import androidx.core.graphics.minus
 import androidx.core.graphics.plus
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -14,7 +15,9 @@ class ChessBoard {
         this.chessView = chessView;
     }
 
-    var board: Array<Array<ChessPiece?>> = Array(8) { arrayOfNulls<ChessPiece>(8) }
+    var board: Array<Array<ChessPiece>> = Array(8) {
+        Array(8) { ChessPiece(ChessPieceType.EMPTY, true) }
+    }
 
     public fun initBoard(json: String?) {
 
@@ -67,9 +70,8 @@ class ChessBoard {
 
     }
 
-    fun getPossibleMoves(currentPosition: Point, isPawnMoveBottomToTop: Boolean = true): ArrayList<Point> {
-
-        val isCurrentWhite = board[currentPosition.x][currentPosition.y]!!.isWhite
+    fun getPossibleMoves(currentPosition: Point, isPawnMoveBottomToTop: Boolean = true): ArrayList<Point>
+    {
         val currCell = board[currentPosition.x][currentPosition.y]
 
         when (currCell!!.type) {
@@ -91,6 +93,7 @@ class ChessBoard {
                     {
                         break
                     }
+                    currCheckPoint.y += pawnDelta
                 }
 
                 return moves
@@ -126,8 +129,6 @@ class ChessBoard {
             }
             ChessPieceType.ROOK -> {
                 // Логика для ходов ладьи
-                // Возвращаем массив с возможными ходами
-
                 val moves = ArrayList<Point>()
 
                 addRookMoves(moves, currentPosition, currCell)
@@ -144,8 +145,49 @@ class ChessBoard {
             }
             ChessPieceType.KING -> {
                 // Логика для ходов короля
-                // Возвращаем массив с возможными ходами
-                // ...
+                val moves = ArrayList<Point>()
+
+                var newPos = Point(currentPosition)
+                newPos.x -= 2
+                newPos.y -= 1
+
+                for(i in 0 until 3)
+                {
+                    newPos.x += 1;
+                    if(checkPos(newPos, currCell) != PositionCheckRes.No)
+                    {
+                        moves.add(Point(newPos))
+                    }
+                }
+
+                for(i in 1 until 3)
+                {
+                    newPos.y += 1;
+                    if(checkPos(newPos, currCell) != PositionCheckRes.No)
+                    {
+                        moves.add(Point(newPos))
+                    }
+                }
+
+                for(i in 1 until 3)
+                {
+                    newPos.x -= 1;
+                    if(checkPos(newPos, currCell) != PositionCheckRes.No)
+                    {
+                        moves.add(Point(newPos))
+                    }
+                }
+
+                for(i in 1 until 2)
+                {
+                    newPos.y -= 1;
+                    if(checkPos(newPos, currCell) != PositionCheckRes.No)
+                    {
+                        moves.add(Point(newPos))
+                    }
+                }
+
+                return moves
             }
             ChessPieceType.EMPTY -> {
                 // Возвращаем пустой массив для пустой клетки
@@ -192,8 +234,9 @@ class ChessBoard {
         doCheckStraightMovement(newPos, currCell, moves, delta)
     }
 
-    private fun doCheckStraightMovement(newPos: Point, currCell: ChessPiece, moves: ArrayList<Point>, delta: Point)
+    private fun doCheckStraightMovement(pos: Point, currCell: ChessPiece, moves: ArrayList<Point>, delta: Point)
     {
+        val newPos = Point(pos)
         while (true)
         {
             newPos.x = newPos.x + delta.x;
@@ -228,7 +271,7 @@ class ChessBoard {
                 return PositionCheckRes.Yes
             }
 
-            if(board[pos.x][pos.y]!!.isWhite == currCell.isWhite)
+            if(board[pos.x][pos.y]!!.isSameSide(currCell))
             {
                 return PositionCheckRes.No
             }
@@ -238,6 +281,21 @@ class ChessBoard {
             }
         }
         return PositionCheckRes.No
+    }
+
+    public fun canMove(possibleMoves: ArrayList<Point>, newPos: Point) : Boolean
+    {
+        val res = possibleMoves.contains(newPos)
+
+        return res
+    }
+
+    public fun move(lastPos: Point, newPos: Point)
+    {
+        val areEnemies = board[lastPos.x][lastPos.y]!!.isEnemy(board[newPos.x][newPos.y]!!)
+
+        board[newPos.x][newPos.y] = board[lastPos.x][lastPos.y].copy();
+        board[lastPos.x][lastPos.y].type = ChessPieceType.EMPTY
     }
 
     private fun validateArr(arr: ArrayList<Point>, currCell: ChessPiece)
