@@ -54,11 +54,16 @@ class ChessView : View{
             MotionEvent.ACTION_UP -> {
                 val pos:Point = getRectPosFromPix(Point(event.x.toInt(), event.y.toInt()))
                 Toast.makeText(context, pos.toString(), Toast.LENGTH_SHORT).show()
+                possibleMoves = chessBoard.getPossibleMoves(pos)
+
                 return true
             }
         }
         return true
     }
+
+    var possibleMoves: ArrayList<Point> = ArrayList()
+    
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
@@ -86,7 +91,7 @@ class ChessView : View{
             for (y in 0 until chessSize.height)
             {
                 //chessBoard.board[x][y];
-                val textRectF: RectF = calcRect(Point(y, x))
+                val textRectF: RectF = calcRect(Point(x, y))
                 val midPointF: PointF = PointF(
                     (textRectF.left + textRectF.right)/2,
                     (textRectF.top + textRectF.bottom)/2
@@ -171,7 +176,7 @@ class ChessView : View{
         return ans
     }
 
-    public fun isValidPoint(pos: Point) : Boolean
+    fun isValidPoint(pos: Point) : Boolean
     {
         if(pos.x < 0) return false
         if(pos.y < 0) return false
