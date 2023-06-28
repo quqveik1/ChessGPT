@@ -6,14 +6,13 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Point
 import android.graphics.PointF
-import android.graphics.Rect
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.util.Size
 import android.util.SizeF
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
+import com.google.gson.Gson
 
 class ChessView : View{
 
@@ -32,8 +31,14 @@ class ChessView : View{
 
     private fun commonConstructor()
     {
-        chessBoard = ChessBoard(this)
-        chessBoard.initBoard(null);
+
+        val isWell = loadBoard()
+
+        if(!isWell)
+        {
+            chessBoard = ChessBoard()
+            chessBoard.initBoard(true)
+        }
     }
 
     private lateinit var chessBoard: ChessBoard
@@ -47,6 +52,33 @@ class ChessView : View{
         blackFigurePaint.textSize = chessPixelSize!!.height * textCellPercentage;
     }
 
+    private val gameKey = "chessBoard"
+    public fun saveBoard()
+    {
+        val chessBoardJson = chessBoard.toJson()
+
+        val sharedPreferences = context.getSharedPreferences(gameKey, Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString(gameKey, chessBoardJson)
+        editor.apply()
+    }
+
+    public fun loadBoard() : Boolean
+    {
+
+        val sharedPref = context.getSharedPreferences(gameKey, Context.MODE_PRIVATE)
+        val jsonString = sharedPref.getString(gameKey, null)
+        if(jsonString != null)
+        {
+            val gson = Gson()
+            chessBoard = gson.fromJson(jsonString, ChessBoard::class.java)
+            return true
+        }
+
+        return false
+
+    }
+
     override fun onTouchEvent(event: MotionEvent?): Boolean
     {
         when (event?.action) {
@@ -57,7 +89,7 @@ class ChessView : View{
                 {
                     if(lastClickedPos != null)
                     {
-                        val canMove = chessBoard.canMove(possibleMoves, pos)
+                        val canMove = chessBoard.canMove(possibleMoves, pos, lastClickedPos!!)
 
                         if(canMove)
                         {
@@ -126,7 +158,7 @@ class ChessView : View{
         super.onDraw(canvas)
 
         drawNet(canvas)
-        drawChess(canvas)
+        drawFigures(canvas)
         drawPossibleMoves(canvas)
     }
 
@@ -144,35 +176,34 @@ class ChessView : View{
 
     private val textCellPercentage: Float = 0.6F
 
-    private fun drawChess(canvas: Canvas?)
+    private fun drawFigures(canvas: Canvas?)
     {
-        for(x in 0 until chessSize.width)
+        for(x in 0 until chessBoard.chessSize.width)
         {
-            for (y in 0 until chessSize.height)
+            for (y in 0 until chessBoard.chessSize.height)
             {
                 //chessBoard.board[x][y];
                 val textRectF: RectF = calcRect(Point(x, y))
                 val midPointF: PointF = getRectMid(textRectF)
 
-                if(chessBoard.board[x][y]?.isWhite == true)
+                if(chessBoard.board[x][y].isWhite)
                 {
-                    chessBoard.board[x][y]?.type?.symbol?.let { canvas?.drawText(it, midPointF.x, midPointF.y, whiteFigurePaint) }
+                    chessBoard.board[x][y].type.symbol.let { canvas?.drawText(it, midPointF.x, midPointF.y, whiteFigurePaint) }
                 }
                 else
                 {
-                    chessBoard.board[x][y]?.type?.symbol?.let { canvas?.drawText(it, midPointF.x, midPointF.y, blackFigurePaint) }
+                    chessBoard.board[x][y].type.symbol.let { canvas?.drawText(it, midPointF.x, midPointF.y, blackFigurePaint) }
                 }
 
             }
         }
     }
 
-    private val chessSize: Size = Size(8, 8)
     private var chessPixelSize: SizeF? = null
 
     private fun calcChessCellSize() {
-        val cellWidth: Float = width.toFloat() / chessSize.width
-        val cellHeight: Float = height.toFloat() / chessSize.height
+        val cellWidth: Float = width.toFloat() / chessBoard.chessSize.width
+        val cellHeight: Float = height.toFloat() / chessBoard.chessSize.height
         chessPixelSize = SizeF(cellWidth, cellHeight)
     }
 
@@ -191,9 +222,9 @@ class ChessView : View{
     {
         var isWhite: Boolean = true
 
-        for(x in 0 until chessSize.width)
+        for(x in 0 until chessBoard.chessSize.width)
         {
-            for(y in 0 until chessSize.height)
+            for(y in 0 until chessBoard.chessSize.height)
             {
                 val chessRect = calcRect(Point(x, y))
                 if(isWhite)
@@ -233,13 +264,5 @@ class ChessView : View{
         return ans
     }
 
-    fun isValidPoint(pos: Point) : Boolean
-    {
-        if(pos.x < 0) return false
-        if(pos.y < 0) return false
-        if(pos.x >= chessSize.width) return false
-        if(pos.y >= chessSize.height) return false
 
-        return true
-    }
 }

@@ -1,83 +1,83 @@
 package com.example.chessgpt.chess
 
 import android.graphics.Point
+import android.util.Size
 import androidx.core.graphics.minus
 import androidx.core.graphics.plus
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.io.Serializable
 
-class ChessBoard {
+class ChessBoard : Serializable {
 
-    private val chessView: ChessView;
-
-    constructor(chessView: ChessView)
-    {
-        this.chessView = chessView;
-    }
+    public val chessSize: SizeSeriazable = SizeSeriazable(8, 8)
+    public var isActiveSideWhite: Boolean = true;
+    public var isBottomSideWhite: Boolean = true;
 
     var board: Array<Array<ChessPiece>> = Array(8) {
         Array(8) { ChessPiece(ChessPieceType.EMPTY, true) }
     }
 
-    public fun initBoard(json: String?) {
-
-        if(json == null)
-        {
-            defaultInit()
-            return
-        }
-
-        val type = object : TypeToken<Array<Array<ChessPiece?>>>() {}.type
-        val gson = Gson()
-        board = gson.fromJson(json, type)
+    public fun initBoard(isBottomSideWhite: Boolean = true)
+    {
+        this.isBottomSideWhite = isBottomSideWhite
+        defaultInit()
     }
 
+    public fun toJson() : String
+    {
+        val gson = Gson()
+        val chessBoardJson = gson.toJson(this)
+
+        return chessBoardJson
+    }
     private fun defaultInit()
     {
-        // Черные фигуры
-        // Черные фигуры
-        board[0][0] = ChessPiece(ChessPieceType.ROOK, false)
-        board[1][0] = ChessPiece(ChessPieceType.KNIGHT, false)
-        board[2][0] = ChessPiece(ChessPieceType.BISHOP, false)
-        board[3][0] = ChessPiece(ChessPieceType.QUEEN, false)
-        board[4][0] = ChessPiece(ChessPieceType.KING, false)
-        board[5][0] = ChessPiece(ChessPieceType.BISHOP, false)
-        board[6][0] = ChessPiece(ChessPieceType.KNIGHT, false)
-        board[7][0] = ChessPiece(ChessPieceType.ROOK, false)
-        for (i in 0..7) {
-            board[i][1] = ChessPiece(ChessPieceType.PAWN, false)
+
+        board[0][0] = ChessPiece(ChessPieceType.ROOK, !isBottomSideWhite)
+        board[1][0] = ChessPiece(ChessPieceType.KNIGHT, !isBottomSideWhite)
+        board[2][0] = ChessPiece(ChessPieceType.BISHOP, !isBottomSideWhite)
+        board[3][0] = ChessPiece(ChessPieceType.QUEEN, !isBottomSideWhite)
+        board[4][0] = ChessPiece(ChessPieceType.KING, !isBottomSideWhite)
+        board[5][0] = ChessPiece(ChessPieceType.BISHOP, !isBottomSideWhite)
+        board[6][0] = ChessPiece(ChessPieceType.KNIGHT, !isBottomSideWhite)
+        board[7][0] = ChessPiece(ChessPieceType.ROOK, !isBottomSideWhite)
+        for (i in 0 until chessSize.width)
+        {
+            board[i][1] = ChessPiece(ChessPieceType.PAWN, !isBottomSideWhite)
         }
 
-// Белые фигуры
-        board[0][7] = ChessPiece(ChessPieceType.ROOK, true)
-        board[1][7] = ChessPiece(ChessPieceType.KNIGHT, true)
-        board[2][7] = ChessPiece(ChessPieceType.BISHOP, true)
-        board[3][7] = ChessPiece(ChessPieceType.QUEEN, true)
-        board[4][7] = ChessPiece(ChessPieceType.KING, true)
-        board[5][7] = ChessPiece(ChessPieceType.BISHOP, true)
-        board[6][7] = ChessPiece(ChessPieceType.KNIGHT, true)
-        board[7][7] = ChessPiece(ChessPieceType.ROOK, true)
-        for (i in 0..7) {
-            board[i][6] = ChessPiece(ChessPieceType.PAWN, true)
+        board[0][7] = ChessPiece(ChessPieceType.ROOK, isBottomSideWhite)
+        board[1][7] = ChessPiece(ChessPieceType.KNIGHT, isBottomSideWhite)
+        board[2][7] = ChessPiece(ChessPieceType.BISHOP, isBottomSideWhite)
+        board[3][7] = ChessPiece(ChessPieceType.QUEEN, isBottomSideWhite)
+        board[4][7] = ChessPiece(ChessPieceType.KING, isBottomSideWhite)
+        board[5][7] = ChessPiece(ChessPieceType.BISHOP, isBottomSideWhite)
+        board[6][7] = ChessPiece(ChessPieceType.KNIGHT, isBottomSideWhite)
+        board[7][7] = ChessPiece(ChessPieceType.ROOK, isBottomSideWhite)
+        for (i in 0 until chessSize.width)
+        {
+            board[i][chessSize.height - 2] = ChessPiece(ChessPieceType.PAWN, isBottomSideWhite)
         }
 
-// Пустые поля
-        for (i in 0..7) {
-            for (j in 2..5) {
+        for (i in 0 until chessSize.width)
+        {
+            for (j in 2 until chessSize.height - 2)
+            {
                 board[i][j] = ChessPiece(ChessPieceType.EMPTY, true)
             }
         }
 
     }
 
-    fun getPossibleMoves(currentPosition: Point, isPawnMoveBottomToTop: Boolean = true): ArrayList<Point>
+    fun getPossibleMoves(currentPosition: Point): ArrayList<Point>
     {
         val currCell = board[currentPosition.x][currentPosition.y]
+        if(currCell.isWhite != isActiveSideWhite) return ArrayList();
 
-        when (currCell!!.type) {
+        when (currCell.type) {
             ChessPieceType.PAWN -> {
-                var pawnDelta: Int = -1;
-                if(!isPawnMoveBottomToTop) pawnDelta *= 1;
+                var pawnDelta: Int = getPawnDir()
 
                 val moves = ArrayList<Point>()
                 val currCheckPoint = Point(currentPosition.x, currentPosition.y + pawnDelta)
@@ -194,8 +194,32 @@ class ChessBoard {
                 return ArrayList()
             }
         }
+    }
 
-        return ArrayList()
+    private fun getPawnDir() : Int
+    {
+        if(isBottomSideWhite)
+        {
+            if(isActiveSideWhite)
+            {
+                return -1;
+            }
+            else
+            {
+                return 1;
+            }
+        }
+        else
+        {
+            if(isActiveSideWhite)
+            {
+                return 1;
+            }
+            else
+            {
+                return -1;
+            }
+        }
     }
 
     private fun addRookMoves(moves: ArrayList<Point>, currentPosition: Point, currCell: ChessPiece)
@@ -232,6 +256,10 @@ class ChessBoard {
         delta.x = 1
         delta.y = 1
         doCheckStraightMovement(newPos, currCell, moves, delta)
+
+        delta.x = -1
+        delta.y = 1
+        doCheckStraightMovement(newPos, currCell, moves, delta)
     }
 
     private fun doCheckStraightMovement(pos: Point, currCell: ChessPiece, moves: ArrayList<Point>, delta: Point)
@@ -264,14 +292,14 @@ class ChessBoard {
 
     private fun checkPos(pos: Point, currCell: ChessPiece) : PositionCheckRes
     {
-        if(chessView.isValidPoint(pos))
+        if(isValidPoint(pos))
         {
-            if(board[pos.x][pos.y]!!.type == ChessPieceType.EMPTY)
+            if(board[pos.x][pos.y].type == ChessPieceType.EMPTY)
             {
                 return PositionCheckRes.Yes
             }
 
-            if(board[pos.x][pos.y]!!.isSameSide(currCell))
+            if(board[pos.x][pos.y].isSameSide(currCell))
             {
                 return PositionCheckRes.No
             }
@@ -283,19 +311,26 @@ class ChessBoard {
         return PositionCheckRes.No
     }
 
-    public fun canMove(possibleMoves: ArrayList<Point>, newPos: Point) : Boolean
+    public fun canMove(possibleMoves: ArrayList<Point>, newPos: Point, currPos: Point) : Boolean
     {
-        val res = possibleMoves.contains(newPos)
+        if(board[currPos.x][currPos.y].isWhite == isActiveSideWhite)
+        {
+            val res = possibleMoves.contains(newPos)
 
-        return res
+            return res
+        }
+
+        return false
     }
 
     public fun move(lastPos: Point, newPos: Point)
     {
-        val areEnemies = board[lastPos.x][lastPos.y]!!.isEnemy(board[newPos.x][newPos.y]!!)
+        val areEnemies = board[lastPos.x][lastPos.y].isEnemy(board[newPos.x][newPos.y])
 
         board[newPos.x][newPos.y] = board[lastPos.x][lastPos.y].copy();
         board[lastPos.x][lastPos.y].type = ChessPieceType.EMPTY
+
+        isActiveSideWhite = !isActiveSideWhite;
     }
 
     private fun validateArr(arr: ArrayList<Point>, currCell: ChessPiece)
@@ -311,5 +346,15 @@ class ChessBoard {
                 iterator.remove()
             }
         }
+    }
+
+    fun isValidPoint(pos: Point) : Boolean
+    {
+        if(pos.x < 0) return false
+        if(pos.y < 0) return false
+        if(pos.x >= chessSize.width) return false
+        if(pos.y >= chessSize.height) return false
+
+        return true
     }
 }
