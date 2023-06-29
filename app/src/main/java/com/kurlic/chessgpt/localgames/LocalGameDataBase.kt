@@ -5,9 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [LocalGame::class], version = 1)
+@Database(entities = [LocalGame::class], version = 2)
 abstract class LocalGameDataBase : RoomDatabase() {
-    abstract fun gameDao(): GameDao
+    abstract fun localGameDao(): LocalGameDao
     companion object {
         @Volatile
         private var INSTANCE: LocalGameDataBase? = null
@@ -22,7 +22,7 @@ abstract class LocalGameDataBase : RoomDatabase() {
                     context.applicationContext,
                     LocalGameDataBase::class.java,
                     "local_game_database"
-                ).build()
+                ).fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 return instance
             }

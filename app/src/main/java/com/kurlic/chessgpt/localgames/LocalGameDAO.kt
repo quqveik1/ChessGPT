@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 
 @Dao
-interface GameDao {
+interface LocalGameDao {
     @Query("SELECT * FROM localgame")
     fun getAll(): LiveData<List<LocalGame>>
 

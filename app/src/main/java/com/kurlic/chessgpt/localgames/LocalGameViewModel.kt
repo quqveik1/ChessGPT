@@ -8,10 +8,11 @@ class LocalGameViewModel(application: Application) : AndroidViewModel(applicatio
 
     private val repository: LocalGameRepository
     val allGames: LiveData<List<LocalGame>>
+    public val localGameDao: LocalGameDao
 
     init {
-        val gamesDao = LocalGameDataBase.getDatabase(application).gameDao()
-        repository = LocalGameRepository(gamesDao)
+        localGameDao = LocalGameDataBase.getDatabase(application).localGameDao()
+        repository = LocalGameRepository(localGameDao)
         allGames = repository.allGames
     }
 }
