@@ -1,4 +1,4 @@
-package com.example.chessgpt.chess
+package com.kurlic.chessgpt.chess
 
 enum class ChessPieceType(val symbol: String) {
     PAWN("P"),

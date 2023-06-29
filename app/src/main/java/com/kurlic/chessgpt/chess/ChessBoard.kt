@@ -1,4 +1,4 @@
-package com.example.chessgpt.chess
+package com.kurlic.chessgpt.chess
 
 import android.graphics.Point
 import android.util.Size
@@ -325,7 +325,7 @@ class ChessBoard : Serializable {
 
     public fun move(lastPos: Point, newPos: Point)
     {
-        val areEnemies = board[lastPos.x][lastPos.y].isEnemy(board[newPos.x][newPos.y])
+        //val areEnemies = board[lastPos.x][lastPos.y].isEnemy(board[newPos.x][newPos.y])
 
         board[newPos.x][newPos.y] = board[lastPos.x][lastPos.y].copy();
         board[lastPos.x][lastPos.y].type = ChessPieceType.EMPTY

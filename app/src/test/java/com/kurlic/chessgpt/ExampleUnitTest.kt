@@ -1,4 +1,4 @@
-package com.example.chessgpt
+package com.kurlic.chessgpt
 
 import org.junit.Test
 

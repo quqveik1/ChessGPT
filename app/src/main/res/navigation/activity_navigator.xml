@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_navigator"
+    app:startDestination="@id/HomeFragment">
+
+    <fragment
+        android:id="@+id/HomeFragment"
+        android:name="com.kurlic.chessgpt.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/home_fragment">
+        <action
+            android:id="@+id/HomeToLocal"
+            app:destination="@id/LocalGameFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/LocalGameFragment"
+        android:name="com.kurlic.chessgpt.localgames.LocalGameFragment"
+        android:label="SecondFragment"
+        tools:layout="@layout/localgame_fragment">
+        <action
+            android:id="@+id/LocalToHome"
+            app:destination="@id/HomeFragment" />
+    </fragment>
+
+</navigation>

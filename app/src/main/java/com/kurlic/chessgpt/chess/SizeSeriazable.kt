@@ -1,4 +1,4 @@
-package com.example.chessgpt.chess
+package com.kurlic.chessgpt.chess
 
 import android.util.Size
 import java.io.Serializable
