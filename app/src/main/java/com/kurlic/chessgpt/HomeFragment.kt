@@ -19,7 +19,7 @@ class HomeFragment : Fragment()
         localGameButton = rootView.findViewById(R.id.localGameButton)
         localGameButton.setOnClickListener(View.OnClickListener
         {
-            findNavController().navigate(R.id.HomeToLocal)
+            findNavController().navigate(R.id.action_HomeToLocal)
         })
 
 

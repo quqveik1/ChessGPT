@@ -11,7 +11,7 @@
         android:label="HomeFragment"
         tools:layout="@layout/home_fragment">
         <action
-            android:id="@+id/HomeToLocal"
+            android:id="@+id/action_HomeToLocal"
             app:destination="@id/LocalGameFragment" />
     </fragment>
 
@@ -21,8 +21,21 @@
         android:label="SecondFragment"
         tools:layout="@layout/localgame_fragment">
         <action
-            android:id="@+id/LocalToHome"
+            android:id="@+id/action_LocalToHome"
             app:destination="@id/HomeFragment" />
+        <action
+            android:id="@+id/action_LocalGameFragment_to_GameFragment"
+            app:destination="@id/GameFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/GameFragment"
+        android:name="com.kurlic.chessgpt.GameFragment"
+        android:label="SecondFragment"
+        tools:layout="@layout/game_fragment">
+        <action
+            android:id="@+id/action_GameFragment_to_LocalGameFragment"
+            app:destination="@id/LocalGameFragment" />
     </fragment>
 
 </navigation>

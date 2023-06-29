@@ -31,17 +31,14 @@ class ChessView : View{
 
     private fun commonConstructor()
     {
-
-        val isWell = loadBoard()
-
-        if(!isWell)
-        {
-            chessBoard = ChessBoard()
-            chessBoard.initBoard(true)
-        }
     }
 
-    private lateinit var chessBoard: ChessBoard
+    private var chessBoard: ChessBoard = ChessBoard()
+        set(value)
+        {
+            field = value
+            invalidate()
+        }
 
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -52,31 +49,26 @@ class ChessView : View{
         blackFigurePaint.textSize = chessPixelSize!!.height * textCellPercentage;
     }
 
-    private val gameKey = "chessBoard"
-    public fun saveBoard()
+    public fun saveBoardToJson() : String
     {
         val chessBoardJson = chessBoard.toJson()
 
-        val sharedPreferences = context.getSharedPreferences(gameKey, Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString(gameKey, chessBoardJson)
-        editor.apply()
+        return chessBoardJson
     }
 
-    public fun loadBoard() : Boolean
+    public fun loadBoardFromJson(jsonString: String?) : Boolean
     {
-
-        val sharedPref = context.getSharedPreferences(gameKey, Context.MODE_PRIVATE)
-        val jsonString = sharedPref.getString(gameKey, null)
         if(jsonString != null)
         {
             val gson = Gson()
             chessBoard = gson.fromJson(jsonString, ChessBoard::class.java)
+            invalidate()
             return true
         }
 
+        chessBoard.initBoard()
+        invalidate()
         return false
-
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean
