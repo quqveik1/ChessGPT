@@ -10,6 +10,8 @@
         android:id="@+id/localGameNewGame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:backgroundTint="@color/mainColor"
+        android:textColor="@color/textColor"
         android:text = "New Game"/>
 
     <androidx.recyclerview.widget.RecyclerView

@@ -19,4 +19,7 @@ interface LocalGameDao {
 
     @Update
     suspend fun update(game: LocalGame)
+
+    @Query("DELETE FROM localgame WHERE id = :id")
+    suspend fun deleteById(id: Int)
 }
