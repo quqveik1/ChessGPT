@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 class HomeFragment : Fragment()
 {
     private lateinit var localGameButton: Button;
+    private lateinit var gptGameButton: Button;
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
@@ -21,6 +22,12 @@ class HomeFragment : Fragment()
         {
             findNavController().navigate(R.id.action_HomeToLocal)
         })
+
+        gptGameButton = rootView.findViewById(R.id.chatGPTGameButton)
+
+        gptGameButton.setOnClickListener {
+            findNavController().navigate(R.id.action_HomeFragment_to_GPTFragment)
+        }
 
 
         return rootView

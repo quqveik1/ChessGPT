@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_HomeToLocal"
             app:destination="@id/LocalGameFragment" />
+        <action
+            android:id="@+id/action_HomeFragment_to_GPTFragment"
+            app:destination="@id/GPTFragment" />
     </fragment>
 
     <fragment
@@ -21,9 +24,6 @@
         android:label="SecondFragment"
         tools:layout="@layout/localgame_fragment">
         <action
-            android:id="@+id/action_LocalToHome"
-            app:destination="@id/HomeFragment" />
-        <action
             android:id="@+id/action_LocalGameFragment_to_GameFragment"
             app:destination="@id/GameFragment" />
     </fragment>
@@ -31,11 +31,15 @@
     <fragment
         android:id="@+id/GameFragment"
         android:name="com.kurlic.chessgpt.GameFragment"
-        android:label="SecondFragment"
+        android:label="GameFragment"
         tools:layout="@layout/game_fragment">
-        <action
-            android:id="@+id/action_GameFragment_to_LocalGameFragment"
-            app:destination="@id/LocalGameFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/GPTFragment"
+        android:name="com.kurlic.chessgpt.gpt.GPTFragment"
+        android:label="GPTFragment"
+        tools:layout="@layout/game_fragment">
     </fragment>
 
 </navigation>

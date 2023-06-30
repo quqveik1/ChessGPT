@@ -76,7 +76,7 @@ class ChessView : View{
         when (event?.action) {
             MotionEvent.ACTION_UP -> {
                 val pos:Point = getRectPosFromPix(Point(event.x.toInt(), event.y.toInt()))
-                Toast.makeText(context, pos.toString(), Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, pos.toString(), Toast.LENGTH_SHORT).show()
                 if(pos != lastClickedPos)
                 {
                     if(lastClickedPos != null)
