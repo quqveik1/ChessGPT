@@ -9,9 +9,12 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import com.kurlic.chessgpt.chess.ChessBoard
+import com.kurlic.chessgpt.chess.ChessMoveListener
 import com.kurlic.chessgpt.chess.ChessView
 import com.kurlic.chessgpt.localgames.LocalGame
 import com.kurlic.chessgpt.localgames.LocalGameDao
+import com.kurlic.chessgpt.localgames.LocalGameDataBase
 import kotlinx.coroutines.launch
 
 class GameFragment:Fragment()
@@ -30,20 +33,69 @@ class GameFragment:Fragment()
         super.onAttach(context)
         if(context is MainActivity)
         {
-            localGameDao = (context as MainActivity).localGameDao!!
+            localGameDao = LocalGameDataBase.getDatabase(context).localGameDao()
         }
     }
 
     lateinit var chessView: ChessView
     lateinit var gameNameTextView: TextView
+    lateinit var activeMoveSideTextView: TextView
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    private val whiteMove: String = "Ход белых"
+    private val blackMove: String = "Ход чёрных"
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
         val rootView: View = inflater.inflate(R.layout.game_fragment, container, false)
 
-        gameId = requireArguments().getInt(ID_KEY)
+        if(savedInstanceState != null)
+        {
+            gameId = savedInstanceState.getInt(ID_KEY, -1);
+        }
+        if(gameId == -1)
+        {
+            gameId = requireArguments().getInt(ID_KEY)
+        }
 
+        getDataFromDao(rootView);
+
+        activeMoveSideTextView = rootView.findViewById(R.id.activeMoveSide)
+
+        chessView.moveListener = object : ChessMoveListener {
+            override fun onMoveMade(chessBoard: ChessBoard) {
+                setActiveColor(chessBoard)
+                saveBoard()
+
+            }
+
+            override fun onArrangementMade(chessBoard: ChessBoard)
+            {
+                setActiveColor(chessBoard)
+            }
+        }
+
+
+        return rootView
+    }
+
+
+
+    fun setActiveColor(chessBoard: ChessBoard)
+    {
+        if(chessBoard.isActiveSideWhite)
+        {
+            activeMoveSideTextView.text = whiteMove
+        }
+        else
+        {
+            activeMoveSideTextView.text = blackMove
+        }
+    }
+
+    fun getDataFromDao(rootView: View)
+    {
         gameNameTextView = rootView.findViewById(R.id.gameName)
+        chessView = rootView.findViewById(R.id.chessView)
 
         val obj = localGameDao.getById(gameId)
 
@@ -56,24 +108,22 @@ class GameFragment:Fragment()
                 chessView.loadBoardFromJson(data)
             }
         }
-
-        chessView = rootView.findViewById(R.id.chessView)
-
-        return rootView
     }
 
-    override fun onDestroyView()
+    fun saveBoard()
     {
-
         val jsonString: String = chessView.saveBoardToJson()
 
         val updatedGame = LocalGame(gameId, gameNameTextView.text.toString(), jsonString)
         lifecycleScope.launch {
             localGameDao.update(updatedGame)
         }
+    }
 
+    override fun onSaveInstanceState(outState: Bundle)
+    {
+        super.onSaveInstanceState(outState)
 
-
-        super.onDestroyView()
+        outState.putInt(ID_KEY, gameId)
     }
 }

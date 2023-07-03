@@ -26,7 +26,7 @@ class LocalGameFragment : Fragment()
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         val rootView: View = inflater.inflate(R.layout.localgame_fragment, container, false)
-        createDB(rootView)
+        createLocalGamesDB(rootView)
 
         setNewGameButton(rootView)
 
@@ -65,7 +65,7 @@ class LocalGameFragment : Fragment()
         }
     }
 
-    fun createDB(rootView: View)
+    fun createLocalGamesDB(rootView: View)
     {
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.my_recycler_view)
 

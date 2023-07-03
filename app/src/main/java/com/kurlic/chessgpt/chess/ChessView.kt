@@ -1,5 +1,6 @@
 package com.kurlic.chessgpt.chess
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -7,12 +8,14 @@ import android.graphics.Paint
 import android.graphics.Point
 import android.graphics.PointF
 import android.graphics.RectF
+import android.text.Layout.Alignment
 import android.util.AttributeSet
 import android.util.SizeF
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
 import com.google.gson.Gson
+import com.kurlic.chessgpt.gpt.GPTMove
 
 class ChessView : View{
 
@@ -33,7 +36,7 @@ class ChessView : View{
     {
     }
 
-    private var chessBoard: ChessBoard = ChessBoard()
+    var chessBoard: ChessBoard = ChessBoard()
         set(value)
         {
             field = value
@@ -49,26 +52,51 @@ class ChessView : View{
         blackFigurePaint.textSize = chessPixelSize!!.height * textCellPercentage;
     }
 
-    public fun saveBoardToJson() : String
+    var moveListener: ChessMoveListener? = null
+
+    fun saveBoardToJson() : String
     {
         val chessBoardJson = chessBoard.toJson()
 
         return chessBoardJson
     }
 
-    public fun loadBoardFromJson(jsonString: String?) : Boolean
+    fun loadBoardFromJson(jsonString: String?) : Boolean
     {
+        var res: Boolean = false;
         if(jsonString != null)
         {
             val gson = Gson()
             chessBoard = gson.fromJson(jsonString, ChessBoard::class.java)
-            invalidate()
+            res = true
+        }
+        else
+        {
+            chessBoard.initBoard()
+            res = true
+        }
+
+        moveListener?.onArrangementMade(chessBoard)
+        invalidate()
+        return res
+    }
+
+    fun moveIfCan(gptMove: GPTMove) : Boolean
+    {
+        val startPos = Point(gptMove.sx, gptMove.sy)
+        val finishPos = Point(gptMove.dx, gptMove.dy)
+        val possibleMoves = chessBoard.getPossibleMoves(startPos)
+
+        val canMove = chessBoard.canMove(possibleMoves, startPos, finishPos)
+
+        if(canMove)
+        {
+            chessBoard.move(finishPos, startPos)
             return true
         }
 
-        chessBoard.initBoard()
-        invalidate()
         return false
+
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean
@@ -88,6 +116,7 @@ class ChessView : View{
                             chessBoard.move(lastClickedPos!!, pos)
                             possibleMoves = ArrayList()
                             lastClickedPos = null
+                            moveListener?.onMoveMade(chessBoard)
                             return true
                         }
                     }
@@ -157,6 +186,15 @@ class ChessView : View{
     private val whiteFigureColor = Color.WHITE;
     private val blackFigureColor = Color.BLACK;
 
+    private val chessTextSizePer = 0.3f
+    private var chessTextSize: Float? = null
+        set(value)
+        {
+            field = value;
+            if(field != null)whitePaint.textSize = field!!;
+            if(field != null)blackPaint.textSize = field!!;
+        }
+
     private var whiteFigurePaint: Paint = Paint().apply {
         color = whiteFigureColor
         textAlign = Paint.Align.CENTER
@@ -192,6 +230,11 @@ class ChessView : View{
     }
 
     private var chessPixelSize: SizeF? = null
+        set(value)
+        {
+            field = value
+            chessTextSize = field!!.height * chessTextSizePer;
+        }
 
     private fun calcChessCellSize() {
         val cellWidth: Float = width.toFloat() / chessBoard.chessSize.width
@@ -219,14 +262,12 @@ class ChessView : View{
             for(y in 0 until chessBoard.chessSize.height)
             {
                 val chessRect = calcRect(Point(x, y))
-                if(isWhite)
-                {
-                    canvas?.drawRect(chessRect, whitePaint);
-                }
-                else
-                {
-                    canvas?.drawRect(chessRect, blackPaint);
-                }
+                val activePaint = if (isWhite) whitePaint else blackPaint;
+                val activeTextPaint = if (!isWhite) whitePaint else blackPaint;
+
+                canvas?.drawRect(chessRect, activePaint);
+                if(y == 0) canvas?.drawText((x + 65).toChar().toString(), chessRect.left, chessRect.top + chessRect.height() - activeTextPaint.textSize * 0.1f, activeTextPaint)
+                if(x == 0) canvas?.drawText((8 - y).toString(), chessRect.left, chessRect.top + activeTextPaint.textSize, activeTextPaint)
 
                 isWhite = !isWhite;
             }

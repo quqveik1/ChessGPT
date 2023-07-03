@@ -77,7 +77,7 @@ class ChessBoard : Serializable {
 
         when (currCell.type) {
             ChessPieceType.PAWN -> {
-                var pawnDelta: Int = getPawnDir()
+                val pawnDelta: Int = getPawnDir()
 
                 val moves = ArrayList<Point>()
                 val currCheckPoint = Point(currentPosition.x, currentPosition.y + pawnDelta)
@@ -94,6 +94,24 @@ class ChessBoard : Serializable {
                         break
                     }
                     currCheckPoint.y += pawnDelta
+                }
+
+                val movePos = Point(currentPosition)
+                movePos.y += pawnDelta
+                movePos.x--
+
+                val res1 = checkPos(movePos, currCell)
+                if(res1 == PositionCheckRes.Last)
+                {
+                    moves.add(Point(movePos))
+                }
+
+                movePos.x+=2
+
+                val res2 = checkPos(movePos, currCell)
+                if(res2 == PositionCheckRes.Last)
+                {
+                    moves.add(Point(movePos))
                 }
 
                 return moves

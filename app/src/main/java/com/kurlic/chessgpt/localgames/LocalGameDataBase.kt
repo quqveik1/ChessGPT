@@ -6,7 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(entities = [LocalGame::class], version = 4)
-abstract class LocalGameDataBase : RoomDatabase() {
+abstract class LocalGameDataBase : RoomDatabase()
+{
     abstract fun localGameDao(): LocalGameDao
     companion object {
         @Volatile
