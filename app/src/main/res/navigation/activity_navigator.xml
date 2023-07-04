@@ -14,8 +14,8 @@
             android:id="@+id/action_HomeToLocal"
             app:destination="@id/LocalGameFragment" />
         <action
-            android:id="@+id/action_HomeFragment_to_GPTFragment"
-            app:destination="@id/GPTFragment" />
+            android:id="@+id/action_HomeFragment_to_OnlineGameFragment"
+            app:destination="@id/OnlineFragment" />
     </fragment>
 
     <fragment
@@ -36,10 +36,10 @@
     </fragment>
 
     <fragment
-        android:id="@+id/GPTFragment"
-        android:name="com.kurlic.chessgpt.gpt.GPTFragment"
-        android:label="GPTFragment"
-        tools:layout="@layout/game_fragment">
+        android:id="@+id/OnlineFragment"
+        android:name="com.kurlic.chessgpt.online.OnlineGameFragment"
+        android:label="OnlineGameFragment"
+        tools:layout="@layout/findgame_fragment">
     </fragment>
 
 </navigation>
