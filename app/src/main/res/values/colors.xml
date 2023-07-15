@@ -5,4 +5,5 @@
     <color name="mainColor">#C8C8C8</color>
     <color name="secondColor">#969696</color>
     <color name="textColor">#323232</color>
+    <color name="errorColor">#F44336</color>
 </resources>
