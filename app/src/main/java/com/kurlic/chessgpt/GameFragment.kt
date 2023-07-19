@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.kurlic.chessgpt.chess.ChessBoard
@@ -40,8 +41,12 @@ class GameFragment:Fragment()
     lateinit var gameNameTextView: TextView
     lateinit var activeMoveSideTextView: TextView
 
-    private val whiteMove: String = "Ход белых"
-    private val blackMove: String = "Ход чёрных"
+    private val whiteMove: String by lazy {
+        requireContext().getString(R.string.white_move)
+    }
+    private val blackMove: String  by lazy {
+        requireContext().getString(R.string.black_move)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {

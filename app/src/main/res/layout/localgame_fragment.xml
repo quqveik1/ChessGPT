@@ -10,9 +10,10 @@
         android:id="@+id/localGameNewGame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/button_margin"
+        android:background="@drawable/button_standart_shape"
         app:backgroundTint="@color/mainColor"
-        android:textColor="@color/textColor"
-        android:text = "New Game"/>
+        android:text = "@string/new_game"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/my_recycler_view"

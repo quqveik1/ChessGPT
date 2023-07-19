@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="new_game">Новая игра</string>
+    <string name="delete_game">Удалить игру</string>
+    <string name="new_game_name">Введите имя игры:</string>
+    <string name="game">Игра</string>
+    <string name="game_name">Имя игры</string>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="new_game">New game</string>
+    <string name="delete_game">Delete game</string>
+    <string name="new_game_name">Enter new game name:</string>
+    <string name="game">Game</string>
+    <string name="game_name">Game name</string>
+</resources>

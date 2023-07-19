@@ -25,7 +25,7 @@ class HomeFragment : Fragment()
 
         val onlineGame: Button = rootView.findViewById(R.id.onlineGameButton)
         onlineGame.setOnClickListener {
-            findNavController().navigate(R.id.action_HomeFragment_to_OnlineGameFragment)
+            //findNavController().navigate(R.id.action_HomeFragment_to_OnlineGameFragment)
         }
 
 

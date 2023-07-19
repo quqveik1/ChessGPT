@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Welcome to Chess Game!"
+            android:text="@string/welcome_text"
             android:textSize="24sp"
             android:textStyle="bold" />
 
@@ -28,19 +28,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
-            android:backgroundTint="@color/mainColor"
-            android:textColor="@color/textColor"
-            android:text="Local Game"
-            android:textSize="18sp" />
+            android:background="@drawable/button_standart_shape"
+            android:text="@string/local_game"
+            android:layout_gravity="center_horizontal" />
 
         <Button
             android:id="@+id/onlineGameButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:backgroundTint="@color/mainColor"
-            android:textColor="@color/textColor"
-            android:text="Play online"
+            android:background="@drawable/button_standart_shape"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/play_online"
             android:textSize="18sp" />
 
     </LinearLayout>

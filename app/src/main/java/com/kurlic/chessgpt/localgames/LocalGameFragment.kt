@@ -1,5 +1,6 @@
 package com.kurlic.chessgpt.localgames
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -43,25 +45,37 @@ class LocalGameFragment : Fragment()
             val view = inflater.inflate(R.layout.localgamecreate_view, null)
 
 
-            builder.setView(view)
-                .setPositiveButton("OK") { dialog, id ->
-                    val name = view.findViewById<EditText>(R.id.editGameName).text.toString();
-                    val game = LocalGame(null, name, null)
-                    lifecycleScope.launch {
-                        val num = viewModel.localGameDao.insert(game)
-                        Toast.makeText(context, num.toString(), Toast.LENGTH_SHORT).show()
+            val alertDialog = builder.setView(view)
+            alertDialog.setPositiveButton("OK")
+            { dialog, id ->
+                val name = view.findViewById<EditText>(R.id.editGameName).text.toString();
+                val game = LocalGame(null, name, null)
+                lifecycleScope.launch {
+                    val num = viewModel.localGameDao.insert(game)
+                    //Toast.makeText(context, num.toString(), Toast.LENGTH_SHORT).show()
 
-                        val bundle = Bundle()
-                        bundle.putInt(GameFragment.ID_KEY, num.toInt())
-                        findNavController().navigate(R.id.action_LocalGameFragment_to_GameFragment, bundle)
-                    }
-
-
+                    val bundle = Bundle()
+                    bundle.putInt(GameFragment.ID_KEY, num.toInt())
+                    findNavController().navigate(R.id.action_LocalGameFragment_to_GameFragment, bundle)
                 }
-                .setNegativeButton("Cancel") { dialog, id ->
-                }
-                .create()
-                .show()
+
+
+            }
+
+            alertDialog.setNegativeButton("Cancel")
+            { dialog, id ->
+            }
+
+
+
+            val alert = alertDialog.create()
+            .apply {
+                show()
+            }
+
+            alert.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor))
+            alert.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor))
+
         }
     }
 

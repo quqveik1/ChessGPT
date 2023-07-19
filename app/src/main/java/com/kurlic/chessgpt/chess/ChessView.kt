@@ -34,7 +34,10 @@ class ChessView : View{
 
     private fun commonConstructor()
     {
+        chessGraphicLoader = ChessGraphicLoader(context, this)
     }
+
+     lateinit var chessGraphicLoader: ChessGraphicLoader
 
     var chessBoard: ChessBoard = ChessBoard()
         set(value)
@@ -183,8 +186,8 @@ class ChessView : View{
         drawPossibleMoves(canvas)
     }
 
-    private val whiteFigureColor = Color.WHITE;
-    private val blackFigureColor = Color.BLACK;
+    private val whiteFigureColor = Color.WHITE
+    private val blackFigureColor = Color.BLACK
 
     private val chessTextSizePer = 0.3f
     private var chessTextSize: Float? = null
@@ -213,17 +216,11 @@ class ChessView : View{
             for (y in 0 until chessBoard.chessSize.height)
             {
                 //chessBoard.board[x][y];
-                val textRectF: RectF = calcRect(Point(x, y))
-                val midPointF: PointF = getRectMid(textRectF)
+                val startRectF: RectF = calcRect(Point(x, y))
+                val finishRectF: RectF = calcRect(Point(x + 1, y + 1))
+                val bitmap = chessGraphicLoader.getGraphicBitmap(chessBoard.board[x][y].type, chessBoard.board[x][y].isWhite);
 
-                if(chessBoard.board[x][y].isWhite)
-                {
-                    chessBoard.board[x][y].type.symbol.let { canvas?.drawText(it, midPointF.x, midPointF.y, whiteFigurePaint) }
-                }
-                else
-                {
-                    chessBoard.board[x][y].type.symbol.let { canvas?.drawText(it, midPointF.x, midPointF.y, blackFigurePaint) }
-                }
+                if(bitmap != null) canvas!!.drawBitmap(bitmap, startRectF.left, startRectF.top, whiteFigurePaint)
 
             }
         }
@@ -234,6 +231,7 @@ class ChessView : View{
         {
             field = value
             chessTextSize = field!!.height * chessTextSizePer;
+            if(value != null)chessGraphicLoader.loadImages(value)
         }
 
     private fun calcChessCellSize() {

@@ -2,22 +2,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:padding="16dp">
+    app:cardCornerRadius="@dimen/main_radius"
+    android:padding="@dimen/button_margin">
 
     <TextView
         android:id="@+id/dialogTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Введите имя игры:"
+        android:text="@string/new_game_name"
         android:textSize="18sp"/>
 
     <EditText
         android:id="@+id/editGameName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Имя игры"
-        android:text="Игра"
+        android:hint="@string/game_name"
+        android:text="@string/game"
         android:inputType="text"
         android:layout_marginTop="16dp" />
 

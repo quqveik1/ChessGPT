@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="welcome_text">Добро пожаловать в шахматы!</string>
+    <string name="local_game">Локальная игра</string>
+    <string name="play_online">Онлайн игра</string>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="white_move">Ход белых</string>
+    <string name="black_move">Ход чёрных</string>
+    <string name="loading">Загрузка...</string>
+</resources>

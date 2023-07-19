@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="white_move">White\'s move</string>
+    <string name="black_move">Black\'s move</string>
+
+    <string name="loading">Loading…</string>
+</resources>
