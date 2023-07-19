@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.kurlic.chessgpt.chess.ChessBoard
 import com.kurlic.chessgpt.chess.ChessMoveListener
@@ -77,8 +76,6 @@ class GameFragment:Fragment()
 
         return rootView
     }
-
-
 
     fun setActiveColor(chessBoard: ChessBoard)
     {

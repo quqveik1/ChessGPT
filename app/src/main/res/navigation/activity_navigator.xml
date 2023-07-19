@@ -37,7 +37,7 @@
 
     <fragment
         android:id="@+id/OnlineFragment"
-        android:name="com.kurlic.chessgpt.online.OnlineGameFragment"
+        android:name="com.kurlic.chessgpt.online.OnlineGameFindFragment"
         android:label="OnlineGameFragment"
         tools:layout="@layout/findgame_fragment">
     </fragment>
