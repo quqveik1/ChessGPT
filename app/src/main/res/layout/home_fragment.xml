@@ -33,13 +33,13 @@
             android:layout_gravity="center_horizontal" />
 
         <Button
-            android:id="@+id/onlineGameButton"
+            android:id="@+id/aiGameButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:background="@drawable/button_standart_shape"
             android:layout_gravity="center_horizontal"
-            android:text="@string/play_online"
+            android:text="Play versus AI"
             android:textSize="18sp" />
 
     </LinearLayout>

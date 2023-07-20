@@ -8,17 +8,27 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.Serializable
 
-class ChessBoard : Serializable {
+class ChessBoard() : Serializable {
 
-    public val chessSize: SizeSeriazable = SizeSeriazable(8, 8)
-    public var isActiveSideWhite: Boolean = true;
-    public var isBottomSideWhite: Boolean = true;
+    val chessSize: SizeSeriazable = SizeSeriazable(8, 8)
+    var isActiveSideWhite: Boolean = true;
+    var isBottomSideWhite: Boolean = true;
+
+    @Transient
+    var chessMoveListener: ChessMoveListener? = null
 
     var board: Array<Array<ChessPiece>> = Array(8) {
         Array(8) { ChessPiece(ChessPieceType.EMPTY, true) }
     }
 
-    public fun initBoard(isBottomSideWhite: Boolean = true)
+    fun getCell(point: Point) : ChessPiece
+    {
+        return board[point.x][point.y]
+    }
+
+
+
+    fun initBoard(isBottomSideWhite: Boolean = true)
     {
         this.isBottomSideWhite = isBottomSideWhite
         defaultInit()
@@ -260,8 +270,8 @@ class ChessBoard : Serializable {
 
     private fun addBishopMoves(moves: ArrayList<Point>, currentPosition: Point, currCell: ChessPiece)
     {
-        var delta = Point(1, 1)
-        var newPos = Point(currentPosition)
+        val delta = Point(1, 1)
+        val newPos = Point(currentPosition)
 
         doCheckStraightMovement(newPos, currCell, moves, delta)
 
@@ -329,7 +339,7 @@ class ChessBoard : Serializable {
         return PositionCheckRes.No
     }
 
-    public fun canMove(possibleMoves: ArrayList<Point>, newPos: Point, currPos: Point) : Boolean
+    fun canMove(possibleMoves: ArrayList<Point>, newPos: Point, currPos: Point) : Boolean
     {
         if(board[currPos.x][currPos.y].isWhite == isActiveSideWhite)
         {
@@ -341,9 +351,13 @@ class ChessBoard : Serializable {
         return false
     }
 
-    public fun move(lastPos: Point, newPos: Point)
+    fun move(lastPos: Point, newPos: Point)
     {
-        //val areEnemies = board[lastPos.x][lastPos.y].isEnemy(board[newPos.x][newPos.y])
+        val areEnemies = board[lastPos.x][lastPos.y].isEnemy(board[newPos.x][newPos.y])
+        if(areEnemies && getCell(newPos).type == ChessPieceType.KING)
+        {
+            chessMoveListener?.onGameEnded(isActiveSideWhite)
+        }
 
         board[newPos.x][newPos.y] = board[lastPos.x][lastPos.y].copy();
         board[lastPos.x][lastPos.y].type = ChessPieceType.EMPTY

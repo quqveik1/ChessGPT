@@ -17,7 +17,7 @@ import com.kurlic.chessgpt.localgames.LocalGameDao
 import com.kurlic.chessgpt.localgames.LocalGameDataBase
 import kotlinx.coroutines.launch
 
-class GameFragment:Fragment()
+abstract class GameFragment:Fragment()
 {
     companion object
     {
@@ -52,23 +52,18 @@ class GameFragment:Fragment()
     {
         val rootView: View = inflater.inflate(R.layout.game_fragment, container, false)
 
-        if(savedInstanceState != null)
-        {
-            gameId = savedInstanceState.getInt(ID_KEY, -1);
-        }
-        if(gameId == -1)
-        {
-            gameId = requireArguments().getInt(ID_KEY)
-        }
-
-        getDataFromDao(rootView);
-
+        gameNameTextView = rootView.findViewById(R.id.gameName)
+        chessView = rootView.findViewById(R.id.chessView)
         activeMoveSideTextView = rootView.findViewById(R.id.activeMoveSide)
+
+        onCreate()
+
+        loadBoard(savedInstanceState)
 
         chessView.moveListener = object : ChessMoveListener {
             override fun onMoveMade(chessBoard: ChessBoard) {
                 setActiveColor(chessBoard)
-                saveBoard()
+                saveBoardBetweenMoves()
 
             }
 
@@ -76,11 +71,21 @@ class GameFragment:Fragment()
             {
                 setActiveColor(chessBoard)
             }
+
+            override fun onGameEnded(isWinSideWhite: Boolean)
+            {
+                TODO("Not yet implemented")
+            }
         }
 
 
         return rootView
     }
+
+    open fun onCreate() {}
+    abstract fun loadBoard(savedInstanceState: Bundle?)
+    open fun saveBoardBetweenMoves() {}
+    abstract fun saveBoardOnDestroyView(outState: Bundle)
 
     fun setActiveColor(chessBoard: ChessBoard)
     {
@@ -94,38 +99,10 @@ class GameFragment:Fragment()
         }
     }
 
-    fun getDataFromDao(rootView: View)
-    {
-        gameNameTextView = rootView.findViewById(R.id.gameName)
-        chessView = rootView.findViewById(R.id.chessView)
-
-        val obj = localGameDao.getById(gameId)
-
-        obj.observe(viewLifecycleOwner) { localGame ->
-            localGame?.let {
-                val text = localGame.name
-                gameNameTextView.text = text
-
-                val data = localGame.gameData
-                chessView.loadBoardFromJson(data)
-            }
-        }
-    }
-
-    fun saveBoard()
-    {
-        val jsonString: String = chessView.saveBoardToJson()
-
-        val updatedGame = LocalGame(gameId, gameNameTextView.text.toString(), jsonString)
-        lifecycleScope.launch {
-            localGameDao.update(updatedGame)
-        }
-    }
-
     override fun onSaveInstanceState(outState: Bundle)
     {
         super.onSaveInstanceState(outState)
 
-        outState.putInt(ID_KEY, gameId)
+        saveBoardOnDestroyView(outState)
     }
 }

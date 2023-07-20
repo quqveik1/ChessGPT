@@ -7,11 +7,17 @@ data class ChessPiece(
     var isWhite: Boolean
 )
 {
-    public fun isSameSide(chessPiece: ChessPiece) : Boolean
+    fun isSameSide(chessPiece: ChessPiece) : Boolean
     {
         return  isWhite == chessPiece.isWhite
     }
-    public fun isEnemy(chessPiece: ChessPiece) : Boolean
+
+    fun isSameSide(isWhite: Boolean) : Boolean
+    {
+        return  this.isWhite == isWhite
+    }
+
+    fun isEnemy(chessPiece: ChessPiece) : Boolean
     {
         return  isWhite != chessPiece.isWhite
     }

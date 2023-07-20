@@ -16,7 +16,14 @@ import android.view.View
 import android.widget.Toast
 import com.google.gson.Gson
 import com.kurlic.chessgpt.gpt.GPTMove
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
+@DelicateCoroutinesApi
 class ChessView : View{
 
     constructor(context: Context) : super(context)
@@ -56,6 +63,11 @@ class ChessView : View{
     }
 
     var moveListener: ChessMoveListener? = null
+        set(value)
+        {
+            field = value
+            chessBoard.chessMoveListener = value
+        }
 
     fun saveBoardToJson() : String
     {
@@ -66,11 +78,15 @@ class ChessView : View{
 
     fun loadBoardFromJson(jsonString: String?) : Boolean
     {
-        var res: Boolean = false;
+        var res = false;
         if(jsonString != null)
         {
             val gson = Gson()
-            chessBoard = gson.fromJson(jsonString, ChessBoard::class.java)
+            GlobalScope.launch {
+                withContext(Dispatchers.Default) {
+                    chessBoard = gson.fromJson(jsonString, ChessBoard::class.java)
+                }
+            }
             res = true
         }
         else
@@ -102,12 +118,12 @@ class ChessView : View{
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean
     {
         when (event?.action) {
             MotionEvent.ACTION_UP -> {
                 val pos:Point = getRectPosFromPix(Point(event.x.toInt(), event.y.toInt()))
-                //Toast.makeText(context, pos.toString(), Toast.LENGTH_SHORT).show()
                 if(pos != lastClickedPos)
                 {
                     if(lastClickedPos != null)
@@ -116,15 +132,12 @@ class ChessView : View{
 
                         if(canMove)
                         {
-                            chessBoard.move(lastClickedPos!!, pos)
-                            possibleMoves = ArrayList()
-                            lastClickedPos = null
-                            moveListener?.onMoveMade(chessBoard)
+                            doMove(lastClickedPos!!, pos)
                             return true
                         }
                     }
                     possibleMoves = chessBoard.getPossibleMoves(pos)
-                    lastClickedPos = pos;
+                    lastClickedPos = pos
                 }
                 else
                 {
@@ -136,6 +149,14 @@ class ChessView : View{
             }
         }
         return true
+    }
+
+    fun doMove(start: Point, finish: Point)
+    {
+        chessBoard.move(start, finish)
+        possibleMoves = ArrayList()
+        lastClickedPos = null
+        moveListener?.onMoveMade(chessBoard)
     }
 
     var possibleMoves: ArrayList<Point> = ArrayList()

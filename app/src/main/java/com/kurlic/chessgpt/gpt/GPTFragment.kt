@@ -29,7 +29,7 @@ class GPTFragment : Fragment()
         .build()
     private val openAIChatAPI = retrofit.create(GPTApi::class.java)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
         val rootView: View = inflater.inflate(R.layout.game_fragment, container, false)
 
