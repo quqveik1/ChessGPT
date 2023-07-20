@@ -1,8 +1,9 @@
 package com.kurlic.chessgpt.localgames
 
 import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
-import com.kurlic.chessgpt.GameFragment
+import com.kurlic.chessgpt.game.GameFragment
 import kotlinx.coroutines.launch
 
 class LocalGameFragment : GameFragment()
@@ -51,4 +52,5 @@ class LocalGameFragment : GameFragment()
     {
         outState.putInt(ID_KEY, gameId)
     }
+
 }

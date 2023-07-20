@@ -82,11 +82,7 @@ class ChessView : View{
         if(jsonString != null)
         {
             val gson = Gson()
-            GlobalScope.launch {
-                withContext(Dispatchers.Default) {
-                    chessBoard = gson.fromJson(jsonString, ChessBoard::class.java)
-                }
-            }
+            chessBoard = gson.fromJson(jsonString, ChessBoard::class.java)
             res = true
         }
         else
@@ -94,6 +90,7 @@ class ChessView : View{
             chessBoard.initBoard()
             res = true
         }
+        chessBoard.chessMoveListener = moveListener
 
         moveListener?.onArrangementMade(chessBoard)
         invalidate()

@@ -2,23 +2,8 @@ package com.kurlic.chessgpt.ai
 
 import android.graphics.Point
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
-import androidx.fragment.app.Fragment
-import com.google.gson.Gson
-import com.kurlic.chessgpt.GameFragment
-import com.kurlic.chessgpt.R
 import com.kurlic.chessgpt.chess.ChessBoard
-import com.kurlic.chessgpt.chess.ChessView
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.kurlic.chessgpt.game.GameFragment
 
 class AIFragment : GameFragment()
 {
@@ -26,10 +11,39 @@ class AIFragment : GameFragment()
 
     val boardKey = "board"
 
+    val isUserSideWhite = true
+
     override fun onCreate()
     {
         super.onCreate()
 
+    }
+
+    inner class AIMoveListener : GameMoveListener()
+    {
+        override fun onMoveMade(chessBoard: ChessBoard)
+        {
+            super.onMoveMade(chessBoard)
+            if(chessBoard.isActiveSideWhite != isUserSideWhite)
+            {
+                doAiMove()
+            }
+        }
+
+        override fun onArrangementMade(chessBoard: ChessBoard)
+        {
+            super.onArrangementMade(chessBoard)
+
+            if(chessBoard.isActiveSideWhite != isUserSideWhite)
+            {
+                doAiMove()
+            }
+        }
+    }
+
+    override fun getChessMoveListener(): GameMoveListener?
+    {
+        return AIMoveListener()
     }
 
     override fun loadBoard(savedInstanceState: Bundle?)

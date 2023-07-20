@@ -1,4 +1,4 @@
-package com.kurlic.chessgpt
+package com.kurlic.chessgpt.game
 
 import android.content.Context
 import android.os.Bundle
@@ -6,16 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import com.kurlic.chessgpt.MainActivity
+import com.kurlic.chessgpt.R
 import com.kurlic.chessgpt.chess.ChessBoard
 import com.kurlic.chessgpt.chess.ChessMoveListener
 import com.kurlic.chessgpt.chess.ChessView
-import com.kurlic.chessgpt.localgames.LocalGame
 import com.kurlic.chessgpt.localgames.LocalGameDao
 import com.kurlic.chessgpt.localgames.LocalGameDataBase
-import kotlinx.coroutines.launch
 
 abstract class GameFragment:Fragment()
 {
@@ -56,34 +55,46 @@ abstract class GameFragment:Fragment()
         chessView = rootView.findViewById(R.id.chessView)
         activeMoveSideTextView = rootView.findViewById(R.id.activeMoveSide)
 
+        chessView.moveListener = getChessMoveListener()
+
         onCreate()
 
         loadBoard(savedInstanceState)
 
-        chessView.moveListener = object : ChessMoveListener {
-            override fun onMoveMade(chessBoard: ChessBoard) {
-                setActiveColor(chessBoard)
-                saveBoardBetweenMoves()
-
-            }
-
-            override fun onArrangementMade(chessBoard: ChessBoard)
-            {
-                setActiveColor(chessBoard)
-            }
-
-            override fun onGameEnded(isWinSideWhite: Boolean)
-            {
-                TODO("Not yet implemented")
-            }
-        }
-
-
         return rootView
     }
 
+    open inner class GameMoveListener : ChessMoveListener
+    {
+        override fun onMoveMade(chessBoard: ChessBoard) {
+            setActiveColor(chessBoard)
+            saveBoardBetweenMoves()
+
+        }
+
+        override fun onArrangementMade(chessBoard: ChessBoard)
+        {
+            setActiveColor(chessBoard)
+        }
+
+        override fun onGameEnded(isWinSideWhite: Boolean) {
+
+            val winner = if (isWinSideWhite) "White" else "Black"
+
+            AlertDialog.Builder(requireContext()).apply {
+                setTitle("Game Ended")
+                setMessage("$winner side won! Congratulations!")
+                setPositiveButton("OK") { _, _ ->
+                    parentFragmentManager.popBackStack()
+                }.setOnCancelListener{parentFragmentManager.popBackStack()}
+            }.create().show()
+        }
+    }
+
+
     open fun onCreate() {}
     abstract fun loadBoard(savedInstanceState: Bundle?)
+    open fun getChessMoveListener() : GameMoveListener?{return GameMoveListener()}
     open fun saveBoardBetweenMoves() {}
     abstract fun saveBoardOnDestroyView(outState: Bundle)
 

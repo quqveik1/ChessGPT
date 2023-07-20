@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
@@ -12,7 +11,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.kurlic.chessgpt.GameFragment
+import com.kurlic.chessgpt.game.GameFragment
 import com.kurlic.chessgpt.MainActivity
 import com.kurlic.chessgpt.R
 import kotlinx.coroutines.launch

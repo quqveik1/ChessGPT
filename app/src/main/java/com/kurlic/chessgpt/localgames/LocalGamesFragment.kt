@@ -15,7 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.kurlic.chessgpt.GameFragment
+import com.kurlic.chessgpt.game.GameFragment
 import com.kurlic.chessgpt.MainActivity
 import com.kurlic.chessgpt.R
 import kotlinx.coroutines.launch
