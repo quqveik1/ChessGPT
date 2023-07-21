@@ -1,5 +1,9 @@
 package com.kurlic.chessgpt.chess
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
@@ -8,22 +12,16 @@ import android.graphics.Paint
 import android.graphics.Point
 import android.graphics.PointF
 import android.graphics.RectF
-import android.text.Layout.Alignment
 import android.util.AttributeSet
 import android.util.SizeF
 import android.view.MotionEvent
 import android.view.View
-import android.widget.Toast
+import android.view.animation.DecelerateInterpolator
 import com.google.gson.Gson
 import com.kurlic.chessgpt.gpt.GPTMove
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlin.math.sqrt
 
-@DelicateCoroutinesApi
 class ChessView : View{
 
     constructor(context: Context) : super(context)
@@ -125,7 +123,7 @@ class ChessView : View{
                 {
                     MotionEvent.ACTION_UP ->
                     {
-                        val pos: Point = getRectPosFromPix(Point(event.x.toInt(), event.y.toInt()))
+                        val pos: Point = getModelPosFromPix(Point(event.x.toInt(), event.y.toInt()))
                         if (pos != lastClickedPos)
                         {
                             if (lastClickedPos != null)
@@ -161,6 +159,8 @@ class ChessView : View{
         possibleMoves = ArrayList()
         lastClickedPos = null
         moveListener?.onMoveMade(chessBoard)
+
+        startAnimation(start, finish)
     }
 
     var possibleMoves: ArrayList<Point> = ArrayList()
@@ -182,7 +182,7 @@ class ChessView : View{
 
         for(i in possibleMoves)
         {
-            val rectF = calcRect(i)
+            val rectF = calcPixRect(i)
 
             val midPointF = getRectMid(rectF)
 
@@ -205,6 +205,11 @@ class ChessView : View{
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+
+        if(chessPixelSize == null)
+        {
+            calcChessCellSize()
+        }
 
         drawNet(canvas)
         drawFigures(canvas)
@@ -240,16 +245,102 @@ class ChessView : View{
         {
             for (y in 0 until chessBoard.chessSize.height)
             {
-                //chessBoard.board[x][y];
-                val startRectF: RectF = calcRect(Point(x, y))
-                val finishRectF: RectF = calcRect(Point(x + 1, y + 1))
-                val bitmap = chessGraphicLoader.getGraphicBitmap(chessBoard.board[x][y].type, chessBoard.board[x][y].isWhite);
 
-                if(bitmap != null) canvas!!.drawBitmap(bitmap, startRectF.left, startRectF.top, whiteFigurePaint)
+                val pos = Point(x, y)
 
+                val contains = animatingList.any { it.finalModelPoint == pos }
+
+                if(!contains) drawFigure(pos, canvas)
             }
         }
+
+        drawAnimatingFigures(canvas)
     }
+
+    private fun drawAnimatingFigures(canvas: Canvas?)
+    {
+        for(figure in animatingList)
+        {
+            drawFigureAtCoordinates(figure.finalModelPoint, figure.currentPixPos, canvas)
+        }
+    }
+
+    val animatingList = ArrayList<AnimatedFigure>()
+
+    private val animationLength =  1000L
+    private val oneCellAnimationLength =  50L
+
+    @SuppressLint("Recycle")
+    fun startAnimation(start: Point, finish: Point)
+    {
+        val pixelStart = calcPixPos(start)
+        val pixelFinish =calcPixPos(finish)
+
+        val figure = AnimatedFigure(finish)
+
+        animatingList.add(figure)
+
+        val animationDuration = calcAnimationTime(start, finish)
+
+        val animatorX = ValueAnimator.ofFloat(pixelStart.x, pixelFinish.x).apply {
+            duration = animationDuration
+            interpolator = DecelerateInterpolator()
+
+            addUpdateListener { animation ->
+                figure.currentPixPos.x = animation.animatedValue as Float
+                invalidate()
+            }
+        }
+
+        val animatorY = ValueAnimator.ofFloat(pixelStart.y, pixelFinish.y).apply {
+            duration = animationDuration
+            interpolator = DecelerateInterpolator()
+
+            addUpdateListener { animation ->
+                figure.currentPixPos.y = animation.animatedValue as Float
+                invalidate()
+            }
+
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    animatingList.remove(figure)
+                    invalidate()
+                }
+            })
+        }
+
+        AnimatorSet().apply {
+            playTogether(animatorX, animatorY)
+            start()
+        }
+    }
+
+    private fun calcAnimationTime(start: Point, finish: Point) : Long
+    {
+        val deltaX = finish.x - start.x
+        val deltaY = finish.y - start.y
+
+        val ans = sqrt((deltaX * deltaX + deltaY * deltaY).toDouble()) * oneCellAnimationLength
+
+        return ans.toLong()
+    }
+
+    private fun drawFigureAtCoordinates(pos: Point, posPix: PointF, canvas: Canvas?)
+    {
+        val bitmap = chessGraphicLoader.getGraphicBitmap(chessBoard.board[pos.x][pos.y].type, chessBoard.board[pos.x][pos.y].isWhite);
+
+        if(bitmap != null) canvas!!.drawBitmap(bitmap, posPix.x, posPix.y, whiteFigurePaint)
+    }
+
+    private fun drawFigure(pos: Point, canvas: Canvas?)
+    {
+        val rectF = calcPixRect(pos)
+
+        val pixPos = PointF(rectF.left, rectF.top)
+
+        drawFigureAtCoordinates(pos, pixPos, canvas)
+    }
+
 
     private var chessPixelSize: SizeF? = null
         set(value)
@@ -284,7 +375,7 @@ class ChessView : View{
         {
             for(y in 0 until chessBoard.chessSize.height)
             {
-                val chessRect = calcRect(Point(x, y))
+                val chessRect = calcPixRect(Point(x, y))
                 val activePaint = if (isWhite) whitePaint else blackPaint;
                 val activeTextPaint = if (!isWhite) whitePaint else blackPaint;
 
@@ -298,7 +389,7 @@ class ChessView : View{
         }
     }
 
-    private fun calcRect(pos : Point) : RectF
+    private fun calcPixRect(pos : Point) : RectF
     {
         val ans: RectF = RectF();
 
@@ -310,7 +401,17 @@ class ChessView : View{
         return ans
     }
 
-    private fun getRectPosFromPix(pos : Point) : Point
+    private fun calcPixPos(pos: Point) : PointF
+    {
+        val ans = PointF();
+
+        ans.x = pos.x * chessPixelSize!!.width
+        ans.y = pos.y * chessPixelSize!!.height
+
+        return ans
+    }
+
+    private fun getModelPosFromPix(pos : Point) : Point
     {
         val ans: Point = Point();
 

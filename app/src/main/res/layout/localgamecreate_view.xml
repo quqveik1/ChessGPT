@@ -28,8 +28,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:checked="true"
-        android:textOn="Играть белыми"
-        android:textOff="Играть черными"
+        android:textOn="@string/play_white"
+        android:textOff="@string/play_black"
         android:background="@drawable/toogle_side_shape"
         android:textColor="@drawable/toogle_text_selector" />
 

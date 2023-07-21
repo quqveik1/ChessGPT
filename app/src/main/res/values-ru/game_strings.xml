@@ -7,4 +7,6 @@
     <string name="white">Белые</string>
     <string name="congratulate_for_side">выйграли!</string>
     <string name="game_ended">Игра завершилась</string>
+    <string name="play_white">Играть за белых</string>
+    <string name="play_black">Играть за чёрных</string>
 </resources>

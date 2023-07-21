@@ -10,4 +10,8 @@
 
     <string name="congratulate_for_side">side won! Congratulations!</string>
     <string name="game_ended">Game ended</string>
+
+
+    <string name="play_white">Play white</string>
+    <string name="play_black">Play black</string>
 </resources>
