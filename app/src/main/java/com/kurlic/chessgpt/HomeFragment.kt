@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.kurlic.chessgpt.game.NewGameCreateDialog
 
 class HomeFragment : Fragment()
 {
@@ -25,10 +26,22 @@ class HomeFragment : Fragment()
 
         val onlineGame: Button = rootView.findViewById(R.id.aiGameButton)
         onlineGame.setOnClickListener {
-            findNavController().navigate(R.id.action_HomeFragment_to_AIFragment)
+            val dialog = AIGameCreateDialog()
+
+            dialog.show(requireContext(), layoutInflater)
         }
 
 
         return rootView
+    }
+
+    inner class AIGameCreateDialog : NewGameCreateDialog()
+    {
+        override fun onOk(bundle: Bundle, name: String)
+        {
+            super.onOk(bundle, name)
+            findNavController().navigate(R.id.action_HomeFragment_to_AIFragment, bundle)
+
+        }
     }
 }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import com.kurlic.chessgpt.game.GameFragment
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class LocalGameFragment : GameFragment()
@@ -34,12 +35,21 @@ class LocalGameFragment : GameFragment()
                 gameNameTextView.text = text
 
                 val data = localGame.gameData
-                chessView.loadBoardFromJson(data)
+
+                if(isBottomSideWhite != null)
+                {
+                    chessView.loadBoardFromJson(data, isBottomSideWhite!!)
+                }
+                else
+                {
+                    chessView.loadBoardFromJson(data)
+                }
             }
         }
     }
     override fun saveBoardBetweenMoves()
     {
+
         val jsonString: String = chessView.saveBoardToJson()
 
         val updatedGame = LocalGame(gameId, gameNameTextView.text.toString(), jsonString)
@@ -53,4 +63,20 @@ class LocalGameFragment : GameFragment()
         outState.putInt(ID_KEY, gameId)
     }
 
+    inner class LocalGameListener : GameMoveListener()
+    {
+        override fun onGameEnded(isWinSideWhite: Boolean)
+        {
+            lifecycleScope.launch {
+                localGameDao.deleteById(gameId)
+            }
+            super.onGameEnded(isWinSideWhite)
+        }
+    }
+
+
+    override fun getChessMoveListener(): GameMoveListener?
+    {
+        return LocalGameListener()
+    }
 }

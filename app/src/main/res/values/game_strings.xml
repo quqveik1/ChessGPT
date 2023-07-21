@@ -4,4 +4,10 @@
     <string name="black_move">Black\'s move</string>
 
     <string name="loading">Loading…</string>
+
+    <string name="black">Black</string>
+    <string name="white">White</string>
+
+    <string name="congratulate_for_side">side won! Congratulations!</string>
+    <string name="game_ended">Game ended</string>
 </resources>

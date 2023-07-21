@@ -2,21 +2,21 @@ package com.kurlic.chessgpt.ai
 
 import android.graphics.Point
 import android.os.Bundle
+import com.kurlic.chessgpt.R
 import com.kurlic.chessgpt.chess.ChessBoard
 import com.kurlic.chessgpt.game.GameFragment
 
 class AIFragment : GameFragment()
 {
-    lateinit var  chessAI: ChessAI
+    lateinit var chessAI: ChessAI
 
     val boardKey = "board"
-
-    val isUserSideWhite = true
 
     override fun onCreate()
     {
         super.onCreate()
 
+        gameNameTextView.setText(R.string.game_vs_ai)
     }
 
     inner class AIMoveListener : GameMoveListener()
@@ -24,7 +24,7 @@ class AIFragment : GameFragment()
         override fun onMoveMade(chessBoard: ChessBoard)
         {
             super.onMoveMade(chessBoard)
-            if(chessBoard.isActiveSideWhite != isUserSideWhite)
+            if(chessBoard.isActiveSideWhite != chessBoard.isBottomSideWhite)
             {
                 doAiMove()
             }
@@ -34,7 +34,7 @@ class AIFragment : GameFragment()
         {
             super.onArrangementMade(chessBoard)
 
-            if(chessBoard.isActiveSideWhite != isUserSideWhite)
+            if(chessBoard.isActiveSideWhite != chessBoard.isBottomSideWhite)
             {
                 doAiMove()
             }
@@ -49,10 +49,16 @@ class AIFragment : GameFragment()
     override fun loadBoard(savedInstanceState: Bundle?)
     {
         val json = savedInstanceState?.getString(boardKey)
-
-        chessView.loadBoardFromJson(json)
-
         chessAI = ChessAI(chessView.chessBoard)
+
+        if(isBottomSideWhite != null)
+        {
+            chessView.loadBoardFromJson(json, isBottomSideWhite!!)
+        }
+        else
+        {
+            chessView.loadBoardFromJson(json)
+        }
     }
 
     override fun saveBoardOnDestroyView(outState: Bundle)
@@ -74,8 +80,6 @@ class AIFragment : GameFragment()
         {
             chessView.doMove(start, finish)
         }
-
-
 
     }
 }

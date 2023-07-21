@@ -3,4 +3,8 @@
     <string name="white_move">Ход белых</string>
     <string name="black_move">Ход чёрных</string>
     <string name="loading">Загрузка...</string>
+    <string name="black">Чёрные</string>
+    <string name="white">Белые</string>
+    <string name="congratulate_for_side">выйграли!</string>
+    <string name="game_ended">Игра завершилась</string>
 </resources>

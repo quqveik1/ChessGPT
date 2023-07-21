@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ToggleButton
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kurlic.chessgpt.game.GameFragment
 import com.kurlic.chessgpt.MainActivity
 import com.kurlic.chessgpt.R
+import com.kurlic.chessgpt.game.NewGameCreateDialog
 import kotlinx.coroutines.launch
 
 class LocalGamesFragment : Fragment()
@@ -34,46 +36,32 @@ class LocalGamesFragment : Fragment()
         return rootView
     }
 
+    inner class LocalGameCreateDialog : NewGameCreateDialog()
+    {
+        override fun onOk(bundle: Bundle, name: String)
+        {
+            super.onOk(bundle, name)
+
+            lifecycleScope.launch {
+                val game = LocalGame(null, name, null)
+                val num = viewModel.localGameDao.insert(game)
+
+                bundle.putInt(GameFragment.ID_KEY, num.toInt())
+
+                findNavController().navigate(R.id.action_LocalGameFragment_to_GameFragment, bundle)
+            }
+        }
+    }
+
+
     fun setNewGameButton(rootView: View)
     {
         newGame = rootView.findViewById(R.id.localGameNewGame)
 
         newGame.setOnClickListener {
-            val builder = AlertDialog.Builder(requireContext())
-            val inflater = layoutInflater
-            val view = inflater.inflate(R.layout.localgamecreate_view, null)
+            val dialog = LocalGameCreateDialog()
 
-
-            val alertDialog = builder.setView(view)
-            alertDialog.setPositiveButton("OK")
-            { dialog, id ->
-                val name = view.findViewById<EditText>(R.id.editGameName).text.toString();
-                val game = LocalGame(null, name, null)
-                lifecycleScope.launch {
-                    val num = viewModel.localGameDao.insert(game)
-                    //Toast.makeText(context, num.toString(), Toast.LENGTH_SHORT).show()
-
-                    val bundle = Bundle()
-                    bundle.putInt(GameFragment.ID_KEY, num.toInt())
-                    findNavController().navigate(R.id.action_LocalGameFragment_to_GameFragment, bundle)
-                }
-
-
-            }
-
-            alertDialog.setNegativeButton("Cancel")
-            { dialog, id ->
-            }
-
-
-
-            val alert = alertDialog.create()
-            .apply {
-                show()
-            }
-
-            alert.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor))
-            alert.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor))
+            dialog.show(requireContext(), layoutInflater)
 
         }
     }

@@ -17,10 +17,20 @@
     <EditText
         android:id="@+id/editGameName"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:hint="@string/game_name"
         android:text="@string/game"
         android:inputType="text"
         android:layout_marginTop="16dp" />
+
+    <ToggleButton
+        android:id="@+id/sideToogleButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:textOn="Играть белыми"
+        android:textOff="Играть черными"
+        android:background="@drawable/toogle_side_shape"
+        android:textColor="@drawable/toogle_text_selector" />
 
 </LinearLayout>

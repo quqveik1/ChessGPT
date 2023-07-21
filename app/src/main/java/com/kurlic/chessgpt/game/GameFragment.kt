@@ -1,12 +1,14 @@
 package com.kurlic.chessgpt.game
 
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.kurlic.chessgpt.MainActivity
 import com.kurlic.chessgpt.R
@@ -21,6 +23,7 @@ abstract class GameFragment:Fragment()
     companion object
     {
         const val ID_KEY = "id"
+        const val BOTTOMSIDE_KEY = "bottom_side"
     }
 
     var gameId: Int = -1;
@@ -40,6 +43,8 @@ abstract class GameFragment:Fragment()
     lateinit var gameNameTextView: TextView
     lateinit var activeMoveSideTextView: TextView
 
+    var isBottomSideWhite: Boolean? = null
+
     private val whiteMove: String by lazy {
         requireContext().getString(R.string.white_move)
     }
@@ -56,6 +61,8 @@ abstract class GameFragment:Fragment()
         activeMoveSideTextView = rootView.findViewById(R.id.activeMoveSide)
 
         chessView.moveListener = getChessMoveListener()
+
+        isBottomSideWhite = arguments?.getBoolean(BOTTOMSIDE_KEY)
 
         onCreate()
 
@@ -79,15 +86,22 @@ abstract class GameFragment:Fragment()
 
         override fun onGameEnded(isWinSideWhite: Boolean) {
 
-            val winner = if (isWinSideWhite) "White" else "Black"
+            val winner = if (isWinSideWhite) requireContext().getString(R.string.white) else requireContext().getString(R.string.black)
 
-            AlertDialog.Builder(requireContext()).apply {
-                setTitle("Game Ended")
-                setMessage("$winner side won! Congratulations!")
-                setPositiveButton("OK") { _, _ ->
+            val alertDialog = AlertDialog.Builder(requireContext()).apply {
+                setTitle(requireContext().getString(R.string.game_ended))
+                setMessage("$winner ${requireContext().getString(R.string.congratulate_for_side)}")
+                setPositiveButton("Ok") { _, _ ->
                     parentFragmentManager.popBackStack()
                 }.setOnCancelListener{parentFragmentManager.popBackStack()}
-            }.create().show()
+            }
+
+            val alert = alertDialog.create()
+                .apply {
+                    show()
+                }
+
+            alert.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor))
         }
     }
 

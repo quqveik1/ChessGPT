@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="play_vs_ai">Play versus AI</string>
+    <string name="game_vs_ai">Game versus AI</string>
+</resources>

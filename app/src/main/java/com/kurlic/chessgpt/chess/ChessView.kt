@@ -53,6 +53,7 @@ class ChessView : View{
             invalidate()
         }
 
+    var canMoveOnlyBottomSide = false
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
@@ -76,7 +77,7 @@ class ChessView : View{
         return chessBoardJson
     }
 
-    fun loadBoardFromJson(jsonString: String?) : Boolean
+    fun loadBoardFromJson(jsonString: String?, isBottomSideWhite: Boolean = true) : Boolean
     {
         var res = false;
         if(jsonString != null)
@@ -87,7 +88,7 @@ class ChessView : View{
         }
         else
         {
-            chessBoard.initBoard()
+            chessBoard.initBoard(isBottomSideWhite)
             res = true
         }
         chessBoard.chessMoveListener = moveListener
@@ -118,34 +119,40 @@ class ChessView : View{
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean
     {
-        when (event?.action) {
-            MotionEvent.ACTION_UP -> {
-                val pos:Point = getRectPosFromPix(Point(event.x.toInt(), event.y.toInt()))
-                if(pos != lastClickedPos)
+        if(!(canMoveOnlyBottomSide && chessBoard.isBottomSideWhite != chessBoard.isActiveSideWhite))
+            {
+                when (event?.action)
                 {
-                    if(lastClickedPos != null)
+                    MotionEvent.ACTION_UP ->
                     {
-                        val canMove = chessBoard.canMove(possibleMoves, pos, lastClickedPos!!)
-
-                        if(canMove)
+                        val pos: Point = getRectPosFromPix(Point(event.x.toInt(), event.y.toInt()))
+                        if (pos != lastClickedPos)
                         {
-                            doMove(lastClickedPos!!, pos)
-                            return true
-                        }
-                    }
-                    possibleMoves = chessBoard.getPossibleMoves(pos)
-                    lastClickedPos = pos
-                }
-                else
-                {
-                    possibleMoves = ArrayList()
-                    lastClickedPos = null
-                }
+                            if (lastClickedPos != null)
+                            {
+                                val canMove =
+                                    chessBoard.canMove(possibleMoves, pos, lastClickedPos!!)
 
+                                if (canMove)
+                                {
+                                    doMove(lastClickedPos!!, pos)
+                                    return true
+                                }
+                            }
+                            possibleMoves = chessBoard.getPossibleMoves(pos)
+                            lastClickedPos = pos
+                        } else
+                        {
+                            possibleMoves = ArrayList()
+                            lastClickedPos = null
+                        }
+
+                        return true
+                    }
+                }
                 return true
             }
-        }
-        return true
+        return false
     }
 
     fun doMove(start: Point, finish: Point)

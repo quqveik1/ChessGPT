@@ -11,8 +11,8 @@ import java.io.Serializable
 class ChessBoard() : Serializable {
 
     val chessSize: SizeSeriazable = SizeSeriazable(8, 8)
-    var isActiveSideWhite: Boolean = true;
-    var isBottomSideWhite: Boolean = true;
+    var isActiveSideWhite: Boolean = true
+    var isBottomSideWhite: Boolean = true
 
     @Transient
     var chessMoveListener: ChessMoveListener? = null
