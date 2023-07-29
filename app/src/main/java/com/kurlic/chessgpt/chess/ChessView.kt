@@ -349,6 +349,14 @@ class ChessView : View{
             chessTextSize = field!!.height * chessTextSizePer;
             if(value != null)chessGraphicLoader.loadImages(value)
         }
+        get()
+        {
+            if(field == null)
+            {
+                field = SizeF(scaleX, scaleY)
+            }
+            return field
+        }
 
     private fun calcChessCellSize() {
         val cellWidth: Float = width.toFloat() / chessBoard.chessSize.width

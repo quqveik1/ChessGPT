@@ -7,8 +7,9 @@ import androidx.core.graphics.plus
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.Serializable
+import kotlin.math.abs
 
-class ChessBoard() : Serializable {
+class ChessBoard : Serializable {
 
     val chessSize: SizeSeriazable = SizeSeriazable(8, 8)
     var isActiveSideWhite: Boolean = true
@@ -25,8 +26,6 @@ class ChessBoard() : Serializable {
     {
         return board[point.x][point.y]
     }
-
-
 
     fun initBoard(isBottomSideWhite: Boolean = true)
     {
@@ -58,12 +57,12 @@ class ChessBoard() : Serializable {
         }
 
         board[0][7] = ChessPiece(ChessPieceType.ROOK, isBottomSideWhite)
-        board[1][7] = ChessPiece(ChessPieceType.KNIGHT, isBottomSideWhite)
-        board[2][7] = ChessPiece(ChessPieceType.BISHOP, isBottomSideWhite)
-        board[3][7] = ChessPiece(ChessPieceType.QUEEN, isBottomSideWhite)
+        //board[1][7] = ChessPiece(ChessPieceType.KNIGHT, isBottomSideWhite)
+        //board[2][7] = ChessPiece(ChessPieceType.BISHOP, isBottomSideWhite)
+        //board[3][7] = ChessPiece(ChessPieceType.QUEEN, isBottomSideWhite)
         board[4][7] = ChessPiece(ChessPieceType.KING, isBottomSideWhite)
-        board[5][7] = ChessPiece(ChessPieceType.BISHOP, isBottomSideWhite)
-        board[6][7] = ChessPiece(ChessPieceType.KNIGHT, isBottomSideWhite)
+        //board[5][7] = ChessPiece(ChessPieceType.BISHOP, isBottomSideWhite)
+        //board[6][7] = ChessPiece(ChessPieceType.KNIGHT, isBottomSideWhite)
         board[7][7] = ChessPiece(ChessPieceType.ROOK, isBottomSideWhite)
         for (i in 0 until chessSize.width)
         {
@@ -175,7 +174,7 @@ class ChessBoard() : Serializable {
                 // Логика для ходов короля
                 val moves = ArrayList<Point>()
 
-                var newPos = Point(currentPosition)
+                val newPos = Point(currentPosition)
                 newPos.x -= 2
                 newPos.y -= 1
 
@@ -215,11 +214,78 @@ class ChessBoard() : Serializable {
                     }
                 }
 
+                checkCastling(currentPosition, moves)
+
                 return moves
             }
             ChessPieceType.EMPTY -> {
                 // Возвращаем пустой массив для пустой клетки
                 return ArrayList()
+            }
+        }
+    }
+
+    private fun getRelativeRight(currentPosition: Point) : Int
+    {
+        return if( !(isBottomSideWhite xor getCell(currentPosition).isWhite)) 1 else -1
+    }
+
+    private fun getRelativeStart(currentPosition: Point) : Int
+    {
+        return if (!(getCell(currentPosition).isWhite xor isBottomSideWhite)) 0 else chessSize.width - 1
+    }
+    private fun getRelativeFinish(currentPosition: Point) : Int
+    {
+        return if (!(getCell(currentPosition).isWhite xor  isBottomSideWhite))  chessSize.width - 1 else 0
+    }
+    private fun getRelativeBottom(currentPosition: Point) : Int
+    {
+        return if (!(getCell(currentPosition).isWhite xor isBottomSideWhite))  chessSize.height - 1 else 0
+    }
+    private fun getRelativeTop(currentPosition: Point) : Int
+    {
+        return if (!(getCell(currentPosition).isWhite xor isBottomSideWhite)) 0 else chessSize.height - 1
+    }
+
+    private fun checkCastling(currentPosition: Point, moves: ArrayList<Point>)
+    {
+        if(!getCell(currentPosition).hasMoved)
+        {
+            var checkablePos = Point(currentPosition.x, currentPosition.y)
+            val rightDelta = getRelativeRight(currentPosition)
+
+            var hasNeighbours = false
+            for(x in 1 .. 2)
+            {
+                checkablePos.x += rightDelta
+                if(getCell(checkablePos).type != ChessPieceType.EMPTY)
+                {
+                    hasNeighbours = true
+                    break
+                }
+            }
+
+            if(!hasNeighbours)
+            {
+                moves.add(Point(currentPosition.x + rightDelta * 2, checkablePos.y))
+            }
+
+            hasNeighbours = false
+            checkablePos = Point(currentPosition.x, currentPosition.y)
+
+            for(x in 1 .. 3)
+            {
+                checkablePos.x -= rightDelta
+                if(getCell(checkablePos).type != ChessPieceType.EMPTY)
+                {
+                    hasNeighbours = true
+                    break
+                }
+            }
+
+            if(!hasNeighbours)
+            {
+                moves.add(Point(currentPosition.x - rightDelta * 2, checkablePos.y))
             }
         }
     }
@@ -351,7 +417,7 @@ class ChessBoard() : Serializable {
         return false
     }
 
-    fun move(lastPos: Point, newPos: Point)
+    fun move(lastPos: Point, newPos: Point, needToChangeActiveSide: Boolean = true)
     {
         val areEnemies = board[lastPos.x][lastPos.y].isEnemy(board[newPos.x][newPos.y])
         if(areEnemies && getCell(newPos).type == ChessPieceType.KING)
@@ -359,10 +425,31 @@ class ChessBoard() : Serializable {
             chessMoveListener?.onGameEnded(isActiveSideWhite)
         }
 
-        board[newPos.x][newPos.y] = board[lastPos.x][lastPos.y].copy();
+        if(board[lastPos.x][lastPos.y].type == ChessPieceType.KING)
+        {
+            val delta = newPos.x - lastPos.x
+            if(abs(delta) > 1)
+            {
+                val rightDir = getRelativeRight(lastPos)
+
+                val isRightRook = (delta / rightDir) >= 0
+
+                val bottom = getRelativeBottom(lastPos)
+
+                val rookStartPos = Point(if(isRightRook) getRelativeFinish(lastPos) else getRelativeStart(lastPos),
+                    bottom)
+
+                val rookFinishPos = Point(if(isRightRook) newPos.x - rightDir else newPos.x + rightDir,
+                    bottom)
+
+                move(rookStartPos, rookFinishPos, false)
+            }
+        }
+
+        board[newPos.x][newPos.y] = board[lastPos.x][lastPos.y].getCopyForMove()
         board[lastPos.x][lastPos.y].type = ChessPieceType.EMPTY
 
-        isActiveSideWhite = !isActiveSideWhite;
+        if(needToChangeActiveSide) isActiveSideWhite = !isActiveSideWhite;
     }
 
     private fun validateArr(arr: ArrayList<Point>, currCell: ChessPiece)
