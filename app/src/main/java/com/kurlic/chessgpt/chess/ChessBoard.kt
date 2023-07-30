@@ -57,12 +57,12 @@ class ChessBoard : Serializable {
         }
 
         board[0][7] = ChessPiece(ChessPieceType.ROOK, isBottomSideWhite)
-        //board[1][7] = ChessPiece(ChessPieceType.KNIGHT, isBottomSideWhite)
-        //board[2][7] = ChessPiece(ChessPieceType.BISHOP, isBottomSideWhite)
-        //board[3][7] = ChessPiece(ChessPieceType.QUEEN, isBottomSideWhite)
+        board[1][7] = ChessPiece(ChessPieceType.KNIGHT, isBottomSideWhite)
+        board[2][7] = ChessPiece(ChessPieceType.BISHOP, isBottomSideWhite)
+        board[3][7] = ChessPiece(ChessPieceType.QUEEN, isBottomSideWhite)
         board[4][7] = ChessPiece(ChessPieceType.KING, isBottomSideWhite)
-        //board[5][7] = ChessPiece(ChessPieceType.BISHOP, isBottomSideWhite)
-        //board[6][7] = ChessPiece(ChessPieceType.KNIGHT, isBottomSideWhite)
+        board[5][7] = ChessPiece(ChessPieceType.BISHOP, isBottomSideWhite)
+        board[6][7] = ChessPiece(ChessPieceType.KNIGHT, isBottomSideWhite)
         board[7][7] = ChessPiece(ChessPieceType.ROOK, isBottomSideWhite)
         for (i in 0 until chessSize.width)
         {

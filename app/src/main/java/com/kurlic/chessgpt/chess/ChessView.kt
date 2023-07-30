@@ -18,6 +18,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import com.google.gson.Gson
+import com.kurlic.chessgpt.R
 import com.kurlic.chessgpt.gpt.GPTMove
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlin.math.sqrt
@@ -169,24 +170,24 @@ class ChessView : View{
             invalidate()
         }
     var lastClickedPos: Point? = null
-    val possibleMovesColor = Color.GREEN
+    val possibleMovesColor by lazy {
+        context.getColor(R.color.moveCell)
+    }
     val possibleMovesRPercantage = 0.3;
-    val possibleMovesPaint = Paint().apply {
-        color = possibleMovesColor
+    val possibleMovesPaint by lazy {
+        Paint().apply {
+            color = possibleMovesColor
+        }
     }
 
 
     private fun drawPossibleMoves(canvas: Canvas?)
     {
-        val pixR = chessPixelSize!!.height * possibleMovesRPercantage
-
         for(i in possibleMoves)
         {
             val rectF = calcPixRect(i)
 
-            val midPointF = getRectMid(rectF)
-
-            canvas?.drawCircle(midPointF.x, midPointF.y, pixR.toFloat(), possibleMovesPaint)
+            canvas?.drawRect(rectF, possibleMovesPaint)
         }
     }
 
@@ -364,8 +365,8 @@ class ChessView : View{
         chessPixelSize = SizeF(cellWidth, cellHeight)
     }
 
-    private val whiteColor = Color.argb(255, 70, 70, 70)
-    private val blackColor = Color.argb(255, 180, 180, 180)
+    private val whiteColor = context.getColor(R.color.whiteCell)
+    private val blackColor = context.getColor(R.color.blackCell)
 
     private val whitePaint: Paint = Paint().apply {
         color = whiteColor

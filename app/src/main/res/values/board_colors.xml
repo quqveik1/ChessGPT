@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="blackCell">#464646</color>
+    <color name="whiteCell">#B4B4B4</color>
+    <color name="moveCell">#B34CAF50</color>
+</resources>
