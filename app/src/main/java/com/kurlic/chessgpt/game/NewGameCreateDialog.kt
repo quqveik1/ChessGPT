@@ -17,21 +17,18 @@ import com.kurlic.chessgpt.R
 import com.kurlic.chessgpt.localgames.LocalGame
 import kotlinx.coroutines.launch
 
-open class NewGameCreateDialog
-{
+open class NewGameCreateDialog {
     lateinit var toogleBar: ToggleButton
 
-    fun show(context: Context, layoutInflater: LayoutInflater)
-    {
+    fun show(context: Context, layoutInflater: LayoutInflater) {
         val builder = AlertDialog.Builder(context)
         val inflater = layoutInflater
         val view = inflater.inflate(R.layout.localgamecreate_view, null)
 
         toogleBar = view.findViewById(R.id.sideToogleButton)
 
-
         val alertDialog = builder.setView(view)
-        alertDialog.setPositiveButton("OK")
+        alertDialog.setPositiveButton(context.getString(R.string.ok))
         { dialog, id ->
             val name = view.findViewById<EditText>(R.id.editGameName).text.toString();
             val bundle = Bundle()
@@ -41,11 +38,9 @@ open class NewGameCreateDialog
 
         }
 
-        alertDialog.setNegativeButton("Cancel")
+        alertDialog.setNegativeButton(context.getString(R.string.cancel))
         { dialog, id ->
         }
-
-
 
         val alert = alertDialog.create()
             .apply {
@@ -56,7 +51,6 @@ open class NewGameCreateDialog
         alert.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(context, R.color.textColor))
     }
 
-    open fun onOk(bundle: Bundle, name: String)
-    {
+    open fun onOk(bundle: Bundle, name: String) {
     }
 }

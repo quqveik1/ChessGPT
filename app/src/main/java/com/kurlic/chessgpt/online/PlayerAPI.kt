@@ -5,7 +5,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-
+@Deprecated("CRINGE")
 interface PlayerAPI {
     @GET("/init/player")
     fun getPlayerID(@Query("androidID") androidID: String): Call<Long>

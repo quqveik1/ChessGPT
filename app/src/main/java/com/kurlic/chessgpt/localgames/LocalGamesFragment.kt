@@ -22,12 +22,10 @@ import com.kurlic.chessgpt.R
 import com.kurlic.chessgpt.game.NewGameCreateDialog
 import kotlinx.coroutines.launch
 
-class LocalGamesFragment : Fragment()
-{
+class LocalGamesFragment : Fragment() {
     lateinit var newGame: Button
     lateinit var viewModel: LocalGameViewModel
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
-    {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView: View = inflater.inflate(R.layout.localgame_fragment, container, false)
         createLocalGamesDB(rootView)
 
@@ -36,10 +34,8 @@ class LocalGamesFragment : Fragment()
         return rootView
     }
 
-    inner class LocalGameCreateDialog : NewGameCreateDialog()
-    {
-        override fun onOk(bundle: Bundle, name: String)
-        {
+    inner class LocalGameCreateDialog : NewGameCreateDialog() {
+        override fun onOk(bundle: Bundle, name: String) {
             super.onOk(bundle, name)
 
             lifecycleScope.launch {
@@ -53,9 +49,7 @@ class LocalGamesFragment : Fragment()
         }
     }
 
-
-    fun setNewGameButton(rootView: View)
-    {
+    fun setNewGameButton(rootView: View) {
         newGame = rootView.findViewById(R.id.localGameNewGame)
 
         newGame.setOnClickListener {
@@ -66,8 +60,7 @@ class LocalGamesFragment : Fragment()
         }
     }
 
-    fun createLocalGamesDB(rootView: View)
-    {
+    fun createLocalGamesDB(rootView: View) {
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.my_recycler_view)
 
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -75,12 +68,10 @@ class LocalGamesFragment : Fragment()
         val factory = LocalGameViewModelFactory(requireActivity().application)
         viewModel = ViewModelProvider(this, factory).get(LocalGameViewModel::class.java)
         viewModel.allGames.observe(viewLifecycleOwner) { games ->
-            // Update the cached copy of the games in the adapter.
             games?.let { (recyclerView.adapter as LocalGameAdapter).submitList(it) }
         }
 
-        if(context is MainActivity)
-        {
+        if (context is MainActivity) {
             (context as MainActivity).localGameDao = viewModel.localGameDao
         }
 

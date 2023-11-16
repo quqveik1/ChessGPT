@@ -4,8 +4,8 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
+@Deprecated("CRINGE")
 interface FindGameAPI {
-
     @GET("/find/game/new")
     fun findGameID(@Query("onlineID") onlineId: Long): Call<Long>
 

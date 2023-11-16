@@ -3,4 +3,6 @@
     <string name="welcome_text">Welcome to Chess Game!</string>
     <string name="local_game">Local Game</string>
     <string name="play_online">Play Online</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
 </resources>

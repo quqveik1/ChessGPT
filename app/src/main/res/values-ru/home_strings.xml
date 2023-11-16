@@ -3,4 +3,6 @@
     <string name="welcome_text">Добро пожаловать в шахматы!</string>
     <string name="local_game">Локальная игра</string>
     <string name="play_online">Онлайн игра</string>
+    <string name="ok">Ок</string>
+    <string name="cancel">Отмена</string>
 </resources>

@@ -6,80 +6,63 @@ import com.kurlic.chessgpt.R
 import com.kurlic.chessgpt.chess.ChessBoard
 import com.kurlic.chessgpt.game.GameFragment
 
-class AIFragment : GameFragment()
-{
+class AIFragment : GameFragment() {
     lateinit var chessAI: ChessAI
 
     val boardKey = "board"
 
-    override fun onCreate()
-    {
+    override fun onCreate() {
         super.onCreate()
 
         gameNameTextView.setText(R.string.game_vs_ai)
     }
 
-    inner class AIMoveListener : GameMoveListener()
-    {
-        override fun onMoveMade(chessBoard: ChessBoard)
-        {
+    inner class AIMoveListener : GameMoveListener() {
+        override fun onMoveMade(chessBoard: ChessBoard) {
             super.onMoveMade(chessBoard)
-            if(chessBoard.isActiveSideWhite != chessBoard.isBottomSideWhite)
-            {
+            if (chessBoard.isActiveSideWhite != chessBoard.isBottomSideWhite) {
                 doAiMove()
             }
         }
 
-        override fun onArrangementMade(chessBoard: ChessBoard)
-        {
+        override fun onArrangementMade(chessBoard: ChessBoard) {
             super.onArrangementMade(chessBoard)
 
-            if(chessBoard.isActiveSideWhite != chessBoard.isBottomSideWhite)
-            {
+            if (chessBoard.isActiveSideWhite != chessBoard.isBottomSideWhite) {
                 doAiMove()
             }
         }
     }
 
-    override fun getChessMoveListener(): GameMoveListener?
-    {
+    override fun getChessMoveListener(): GameMoveListener? {
         return AIMoveListener()
     }
 
-    override fun loadBoard(savedInstanceState: Bundle?)
-    {
+    override fun loadBoard(savedInstanceState: Bundle?) {
         val json = savedInstanceState?.getString(boardKey)
         chessAI = ChessAI(chessView.chessBoard)
 
-        if(isBottomSideWhite != null)
-        {
+        if (isBottomSideWhite != null) {
             chessView.loadBoardFromJson(json, isBottomSideWhite!!)
-        }
-        else
-        {
+        } else {
             chessView.loadBoardFromJson(json)
         }
     }
 
-    override fun saveBoardOnDestroyView(outState: Bundle)
-    {
+    override fun saveBoardOnDestroyView(outState: Bundle) {
         val json = chessView.saveBoardToJson()
 
         outState.putString(boardKey, json)
     }
 
-
-    private fun doAiMove()
-    {
+    private fun doAiMove() {
         val start = Point()
         val finish = Point(-1, -1)
 
         chessAI.findBestMove(start, finish)
 
-        if(chessView.chessBoard.isValidPoint(finish))
-        {
+        if (chessView.chessBoard.isValidPoint(finish)) {
             chessView.doMove(start, finish)
         }
-
     }
 }

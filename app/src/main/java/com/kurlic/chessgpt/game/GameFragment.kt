@@ -18,10 +18,8 @@ import com.kurlic.chessgpt.chess.ChessView
 import com.kurlic.chessgpt.localgames.LocalGameDao
 import com.kurlic.chessgpt.localgames.LocalGameDataBase
 
-abstract class GameFragment:Fragment()
-{
-    companion object
-    {
+abstract class GameFragment : Fragment() {
+    companion object {
         const val ID_KEY = "id"
         const val BOTTOMSIDE_KEY = "bottom_side"
     }
@@ -30,11 +28,9 @@ abstract class GameFragment:Fragment()
 
     lateinit var localGameDao: LocalGameDao
 
-    override fun onAttach(context: Context)
-    {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
-        if(context is MainActivity)
-        {
+        if (context is MainActivity) {
             localGameDao = LocalGameDataBase.getDatabase(context).localGameDao()
         }
     }
@@ -48,12 +44,11 @@ abstract class GameFragment:Fragment()
     private val whiteMove: String by lazy {
         requireContext().getString(R.string.white_move)
     }
-    private val blackMove: String  by lazy {
+    private val blackMove: String by lazy {
         requireContext().getString(R.string.black_move)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
-    {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val rootView: View = inflater.inflate(R.layout.game_fragment, container, false)
 
         gameNameTextView = rootView.findViewById(R.id.gameName)
@@ -71,16 +66,14 @@ abstract class GameFragment:Fragment()
         return rootView
     }
 
-    open inner class GameMoveListener : ChessMoveListener
-    {
+    open inner class GameMoveListener : ChessMoveListener {
         override fun onMoveMade(chessBoard: ChessBoard) {
             setActiveColor(chessBoard)
             saveBoardBetweenMoves()
 
         }
 
-        override fun onArrangementMade(chessBoard: ChessBoard)
-        {
+        override fun onArrangementMade(chessBoard: ChessBoard) {
             setActiveColor(chessBoard)
         }
 
@@ -93,39 +86,39 @@ abstract class GameFragment:Fragment()
                 setMessage("$winner ${requireContext().getString(R.string.congratulate_for_side)}")
                 setPositiveButton("Ok") { _, _ ->
                     parentFragmentManager.popBackStack()
-                }.setOnCancelListener{parentFragmentManager.popBackStack()}
+                }.setOnCancelListener { parentFragmentManager.popBackStack() }
             }
 
-            val alert = alertDialog.create()
-                .apply {
-                    show()
-                }
+            val alert = alertDialog.create().apply {
+                show()
+            }
 
             alert.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor))
         }
     }
 
+    open fun onCreate() {
+    }
 
-    open fun onCreate() {}
     abstract fun loadBoard(savedInstanceState: Bundle?)
-    open fun getChessMoveListener() : GameMoveListener?{return GameMoveListener()}
-    open fun saveBoardBetweenMoves() {}
+    open fun getChessMoveListener(): GameMoveListener? {
+        return GameMoveListener()
+    }
+
+    open fun saveBoardBetweenMoves() {
+    }
+
     abstract fun saveBoardOnDestroyView(outState: Bundle)
 
-    fun setActiveColor(chessBoard: ChessBoard)
-    {
-        if(chessBoard.isActiveSideWhite)
-        {
+    fun setActiveColor(chessBoard: ChessBoard) {
+        if (chessBoard.isActiveSideWhite) {
             activeMoveSideTextView.text = whiteMove
-        }
-        else
-        {
+        } else {
             activeMoveSideTextView.text = blackMove
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle)
-    {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
         saveBoardOnDestroyView(outState)

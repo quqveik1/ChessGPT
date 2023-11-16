@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 data class Action(var name: String)
 data class Event(var name: String)
 
+@Deprecated("CRINGE")
 interface MyWebSocketService {
     @Receive
     fun observeWebSocketEvent(): Stream<WebSocket.Event>

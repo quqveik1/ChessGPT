@@ -20,6 +20,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+@Deprecated("CRINGE")
 class OnlineGameFindFragment : Fragment() {
 
     lateinit var retryButton: Button
@@ -39,7 +40,7 @@ class OnlineGameFindFragment : Fragment() {
         progressBar = rootView.findViewById(R.id.progressBar)
         searchData = rootView.findViewById(R.id.searchData)
 
-        retryButton.setOnClickListener{
+        retryButton.setOnClickListener {
             connectToGetId()
         }
 
@@ -54,22 +55,16 @@ class OnlineGameFindFragment : Fragment() {
         deleteFromOnline()
     }
 
-    private fun deleteFromOnline()
-    {
+    private fun deleteFromOnline() {
         val api = retrofit.create(FindGameAPI::class.java)
         val call = api.deleteFromOnline(OnlineGameData.onlineID!!)
 
-        call.enqueue(object : Callback<Boolean>
-        {
-            override fun onResponse(call: Call<Boolean>, response: Response<Boolean>)
-            {
+        call.enqueue(object : Callback<Boolean> {
+            override fun onResponse(call: Call<Boolean>, response: Response<Boolean>) {
                 if (!isAdded) return
-                if (response.isSuccessful)
-                {
+                if (response.isSuccessful) {
                     Toast.makeText(context, "deleted", Toast.LENGTH_SHORT).show()
-                }
-                else
-                {
+                } else {
                     Log.e("context", "Error: ${response.code()}")
                     serverResponseErrorInfo()
                 }
@@ -87,8 +82,7 @@ class OnlineGameFindFragment : Fragment() {
     val ServerIP = "192.168.1.119:8080"
     lateinit var retrofit: Retrofit
 
-    private fun createRetrofit()
-    {
+    private fun createRetrofit() {
         retrofit = Retrofit.Builder()
             .baseUrl("http://$ServerIP/")
             .addConverterFactory(GsonConverterFactory.create())
@@ -96,8 +90,7 @@ class OnlineGameFindFragment : Fragment() {
     }
 
     @SuppressLint("HardwareIds")
-    fun connectToGetId()
-    {
+    fun connectToGetId() {
         onSearchStartInfo()
 
         val api = retrofit.create(PlayerAPI::class.java)
@@ -105,19 +98,14 @@ class OnlineGameFindFragment : Fragment() {
         val androidId = Settings.Secure.getString(context?.contentResolver, Settings.Secure.ANDROID_ID)
 
         val call = api.getPlayerID(androidId)
-        call.enqueue(object : Callback<Long>
-        {
-            override fun onResponse(call: Call<Long>, response: Response<Long>)
-            {
+        call.enqueue(object : Callback<Long> {
+            override fun onResponse(call: Call<Long>, response: Response<Long>) {
                 if (!isAdded) return
-                if (response.isSuccessful)
-                {
+                if (response.isSuccessful) {
                     OnlineGameData.onlineID = response.body()
                     Toast.makeText(context, OnlineGameData.onlineID.toString(), Toast.LENGTH_SHORT).show()
                     onWellServerResponse()
-                }
-                else
-                {
+                } else {
                     Log.e("context", "Error: ${response.code()}")
                     serverResponseErrorInfo()
                 }
@@ -132,18 +120,15 @@ class OnlineGameFindFragment : Fragment() {
         })
     }
 
-    private fun onSearchStartInfo()
-    {
+    private fun onSearchStartInfo() {
         progressBar.visibility = View.VISIBLE
         retryButton.visibility = View.GONE
 
         searchData.text = "Подключение к серверу"
         searchData.setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor))
-
     }
 
-    private fun onWellServerResponse()
-    {
+    private fun onWellServerResponse() {
         progressBar.visibility = View.VISIBLE
         retryButton.visibility = View.GONE
 
@@ -151,30 +136,22 @@ class OnlineGameFindFragment : Fragment() {
         searchData.setTextColor(ContextCompat.getColor(requireContext(), R.color.textColor))
 
         findGame()
-
     }
 
-    private fun findGame()
-    {
+    private fun findGame() {
         val api = retrofit.create(FindGameAPI::class.java)
 
         val call = api.findGameID(OnlineGameData.onlineID!!)
-        call.enqueue(object : Callback<Long>
-        {
-            override fun onResponse(call: Call<Long>, response: Response<Long>)
-            {
+        call.enqueue(object : Callback<Long> {
+            override fun onResponse(call: Call<Long>, response: Response<Long>) {
                 if (!isAdded) return
-                if (response.isSuccessful)
-                {
+                if (response.isSuccessful) {
                     OnlineGameData.onlineGameID = response.body()
                     Toast.makeText(context, OnlineGameData.onlineGameID.toString(), Toast.LENGTH_SHORT).show()
-                    if(OnlineGameData.onlineGameID == 0L)
-                    {
+                    if (OnlineGameData.onlineGameID == 0L) {
                         findGame()
                     }
-                }
-                else
-                {
+                } else {
                     Log.e("context", "Error: ${response.code()}")
                     serverResponseErrorInfo()
                 }
@@ -189,8 +166,7 @@ class OnlineGameFindFragment : Fragment() {
         })
     }
 
-    private fun serverResponseErrorInfo()
-    {
+    private fun serverResponseErrorInfo() {
         progressBar.visibility = View.GONE
         retryButton.visibility = View.VISIBLE
 
@@ -198,11 +174,7 @@ class OnlineGameFindFragment : Fragment() {
         searchData.setTextColor(ContextCompat.getColor(requireContext(), R.color.errorColor))
     }
 
-
     private fun handleMessage(message: String) {
-        // TODO: Handle the received message
         Log.d("CHESSSERVER", "Received message: $message")
-        // Дополнительная обработка полученного сообщения
     }
-
 }

@@ -6,8 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.kurlic.chessgpt.localgames.LocalGameDao
 
-class MainActivity : AppCompatActivity()
-{
+class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     var localGameDao: LocalGameDao? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,7 +15,4 @@ class MainActivity : AppCompatActivity()
 
         navController = findNavController(R.id.nav_host_fragment)
     }
-
-
-
 }

@@ -7,26 +7,19 @@ import com.kurlic.chessgpt.game.GameFragment
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class LocalGameFragment : GameFragment()
-{
-
-    override fun loadBoard(savedInstanceState: Bundle?)
-    {
-        if(savedInstanceState != null)
-        {
+class LocalGameFragment : GameFragment() {
+    override fun loadBoard(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) {
             gameId = savedInstanceState.getInt(ID_KEY, -1);
         }
-        if(gameId == -1)
-        {
+        if (gameId == -1) {
             gameId = requireArguments().getInt(ID_KEY)
         }
 
         getDataFromDao()
     }
 
-
-    private fun getDataFromDao()
-    {
+    private fun getDataFromDao() {
         val obj = localGameDao.getById(gameId)
 
         obj.observe(viewLifecycleOwner) { localGame ->
@@ -36,19 +29,16 @@ class LocalGameFragment : GameFragment()
 
                 val data = localGame.gameData
 
-                if(isBottomSideWhite != null)
-                {
+                if (isBottomSideWhite != null) {
                     chessView.loadBoardFromJson(data, isBottomSideWhite!!)
-                }
-                else
-                {
+                } else {
                     chessView.loadBoardFromJson(data)
                 }
             }
         }
     }
-    override fun saveBoardBetweenMoves()
-    {
+
+    override fun saveBoardBetweenMoves() {
 
         val jsonString: String = chessView.saveBoardToJson()
 
@@ -58,15 +48,12 @@ class LocalGameFragment : GameFragment()
         }
     }
 
-    override fun saveBoardOnDestroyView(outState: Bundle)
-    {
+    override fun saveBoardOnDestroyView(outState: Bundle) {
         outState.putInt(ID_KEY, gameId)
     }
 
-    inner class LocalGameListener : GameMoveListener()
-    {
-        override fun onGameEnded(isWinSideWhite: Boolean)
-        {
+    inner class LocalGameListener : GameMoveListener() {
+        override fun onGameEnded(isWinSideWhite: Boolean) {
             lifecycleScope.launch {
                 localGameDao.deleteById(gameId)
             }
@@ -74,9 +61,7 @@ class LocalGameFragment : GameFragment()
         }
     }
 
-
-    override fun getChessMoveListener(): GameMoveListener?
-    {
+    override fun getChessMoveListener(): GameMoveListener? {
         return LocalGameListener()
     }
 }

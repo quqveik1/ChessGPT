@@ -13,11 +13,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
 class ChessGraphicLoader(private val context: Context, private val chessView: ChessView) {
 
-    companion object
-    {
+    companion object {
         private var pieceGraphics: Map<String, Bitmap> = HashMap()
         private var loadFinished = false
         private var previousPoleSize: SizeF = SizeF(0F, 0F)
@@ -33,25 +31,22 @@ class ChessGraphicLoader(private val context: Context, private val chessView: Ch
         val view = inflater.inflate(R.layout.game_graphic_loading_dialog, null)
 
         builder.setView(view)
-        builder.setCancelable(false) // optional, prevents user from closing dialog
+        builder.setCancelable(false)
 
         loadingDialog = builder.create()
         loadingDialog.show()
     }
 
-    private fun hideLoadingDialog()
-    {
+    private fun hideLoadingDialog() {
         loadFinished = true
 
         loadingDialog.dismiss()
         chessView.invalidate()
     }
 
-
     @SuppressLint("DiscouragedApi")
     fun loadImages(poleSize: SizeF) {
-        if(poleSize != previousPoleSize)
-        {
+        if (poleSize != previousPoleSize) {
             showLoadingDialog()
             CoroutineScope(Dispatchers.IO).launch {
                 val pieceTypes = ChessPieceType.values().filter { it != ChessPieceType.EMPTY }
@@ -76,7 +71,6 @@ class ChessGraphicLoader(private val context: Context, private val chessView: Ch
         }
     }
 
-
     @SuppressLint("DiscouragedApi")
     private fun getBitmapFromResourceName(context: Context, resourceName: String, poleSize: SizeF): Bitmap {
         val resId = context.resources.getIdentifier(resourceName, "drawable", context.packageName)
@@ -84,12 +78,12 @@ class ChessGraphicLoader(private val context: Context, private val chessView: Ch
 
         val scaledBitmap = Bitmap.createScaledBitmap(origBitmap, poleSize.width.toInt(), poleSize.height.toInt(), true)
 
-        return  scaledBitmap
+        return scaledBitmap
     }
 
     fun getGraphicBitmap(pieceType: ChessPieceType, isWhite: Boolean): Bitmap? {
-        if(pieceType == ChessPieceType.EMPTY) return null
-        if(!loadFinished) return null
+        if (pieceType == ChessPieceType.EMPTY) return null
+        if (!loadFinished) return null
 
         val color = if (isWhite) "white" else "black"
         val key = "${pieceType.symbol}_$color"

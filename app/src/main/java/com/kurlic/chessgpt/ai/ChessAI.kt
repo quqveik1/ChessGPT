@@ -3,14 +3,11 @@ package com.kurlic.chessgpt.ai
 import android.graphics.Point
 import com.kurlic.chessgpt.chess.ChessBoard
 import com.kurlic.chessgpt.chess.ChessPieceType
-import kotlin.math.max
-import kotlin.math.min
+import io.reactivex.annotations.Experimental
 
 class ChessAI(var chessBoard: ChessBoard) {
 
-    fun findBestMove(retStartPos: Point, retFinishPos: Point)
-    {
-        //minimax(4, true, retStartPos, retFinishPos)
+    fun findBestMove(retStartPos: Point, retFinishPos: Point) {
         findBestMove(chessBoard.isActiveSideWhite, retStartPos, retFinishPos)
     }
 
@@ -24,21 +21,19 @@ class ChessAI(var chessBoard: ChessBoard) {
 
         val bestMoves = mutableListOf<Pair<Point, Point>>()
 
-        for(x in 0 until chessBoard.chessSize.width) {
-            for(y in 0 until chessBoard.chessSize.height) {
+        for (x in 0 until chessBoard.chessSize.width) {
+            for (y in 0 until chessBoard.chessSize.height) {
                 tmpStartPos.x = x
                 tmpStartPos.y = y
                 tmpFinishPos = Point(-1, -1)
 
-                val points = checkCellMove(tmpStartPos,  tmpFinishPos,  isWhite)
+                val points = checkCellMove(tmpStartPos, tmpFinishPos, isWhite)
 
-                if(bestMoveScore < points)
-                {
+                if (bestMoveScore < points) {
                     bestMoves.clear()
                     bestMoves.add(Pair(Point(tmpStartPos.x, tmpStartPos.y), Point(tmpFinishPos.x, tmpFinishPos.y)))
                     bestMoveScore = points
-                }
-                else if (bestMoveScore == points) {
+                } else if (bestMoveScore == points) {
                     bestMoves.add(Pair(Point(tmpStartPos.x, tmpStartPos.y), Point(tmpFinishPos.x, tmpFinishPos.y)))
                 }
             }
@@ -53,21 +48,16 @@ class ChessAI(var chessBoard: ChessBoard) {
         }
     }
 
-
-    private fun checkCellMove(position: Point, retFinishPos: Point, isWhite: Boolean) : Int
-    {
-        if(!chessBoard.getCell(position).isSameSide(isWhite))
-        {
+    private fun checkCellMove(position: Point, retFinishPos: Point, isWhite: Boolean): Int {
+        if (!chessBoard.getCell(position).isSameSide(isWhite)) {
             return -1;
         }
 
         val pMoves = chessBoard.getPossibleMoves(position)
         var bestMoveScore: Int = -1
 
-        for(move in pMoves)
-        {
-            if(chessBoard.getCell(move).type.value > bestMoveScore)
-            {
+        for (move in pMoves) {
+            if (chessBoard.getCell(move).type.value > bestMoveScore) {
                 bestMoveScore = (chessBoard.getCell(move).type.value);
                 retFinishPos.x = move.x
                 retFinishPos.y = move.y
@@ -77,6 +67,7 @@ class ChessAI(var chessBoard: ChessBoard) {
         return bestMoveScore
     }
 
+    @Experimental
     private fun minimax(depth: Int, isMaximizingPlayer: Boolean, startRetPos: Point, finishRetPos: Point): Int {
         if (depth == 0) {
             return evaluateBoard()
@@ -103,8 +94,7 @@ class ChessAI(var chessBoard: ChessBoard) {
 
                     // Update the best score and alpha/beta values
                     if (isMaximizingPlayer) {
-                        if(currentScore > bestMoveScore)
-                        {
+                        if (currentScore > bestMoveScore) {
                             bestMoveScore = currentScore
                             startRetPos.x = startPos.x
                             startRetPos.y = startPos.y
@@ -112,8 +102,7 @@ class ChessAI(var chessBoard: ChessBoard) {
                             finishRetPos.y = move.y
                         }
                     } else {
-                        if(currentScore < bestMoveScore)
-                        {
+                        if (currentScore < bestMoveScore) {
                             bestMoveScore = currentScore
                             startRetPos.x = startPos.x
                             startRetPos.y = startPos.y
@@ -135,8 +124,6 @@ class ChessAI(var chessBoard: ChessBoard) {
             for (y in 0 until chessBoard.chessSize.height) {
                 val piece = chessBoard.getCell(Point(x, y))
                 if (piece.type != ChessPieceType.EMPTY) {
-
-                    // Subtract the value if the piece is of the opposite color
                     score += if (piece.isWhite == chessBoard.isActiveSideWhite) piece.type.value else -piece.type.value
                 }
             }
@@ -144,6 +131,4 @@ class ChessAI(var chessBoard: ChessBoard) {
 
         return score
     }
-
-
 }

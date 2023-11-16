@@ -15,7 +15,7 @@ interface LocalGameDao {
     fun getById(id: Int): LiveData<LocalGame>
 
     @Insert
-    suspend fun insert(game: LocalGame) : Long
+    suspend fun insert(game: LocalGame): Long
 
     @Update
     suspend fun update(game: LocalGame)

@@ -21,7 +21,6 @@ class LocalGameAdapter : ListAdapter<LocalGame, LocalGameAdapter.LocalGameViewHo
     class LocalGameViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val gameName: TextView = itemView.findViewById(R.id.localGameName)
         val deleteButton: ImageButton = itemView.findViewById(R.id.deleteGame)
-        // Другие поля
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocalGameViewHolder {
@@ -33,31 +32,27 @@ class LocalGameAdapter : ListAdapter<LocalGame, LocalGameAdapter.LocalGameViewHo
         val game = getItem(position)
         holder.gameName.text = game.name
 
-        holder.itemView.setOnClickListener{
+        holder.itemView.setOnClickListener {
             val gameId = game.id
             val bundle = Bundle()
-            if (gameId != null)
-            {
+            if (gameId != null) {
                 bundle.putInt(GameFragment.ID_KEY, gameId.toInt())
                 it.findNavController().navigate(R.id.action_LocalGameFragment_to_GameFragment, bundle)
             }
 
         }
 
-        holder.deleteButton.setOnClickListener{
+        holder.deleteButton.setOnClickListener {
             val id: Int? = game.id;
 
-            if(it.context is MainActivity)
-            {
+            if (it.context is MainActivity) {
                 val dao = (it.context as MainActivity).localGameDao;
 
                 (it.context as MainActivity).lifecycleScope.launch {
                     dao?.deleteById(id!!)
                 }
-
             }
         }
-
     }
 
     object LocalGameDiffCallback : DiffUtil.ItemCallback<LocalGame>() {

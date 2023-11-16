@@ -12,6 +12,7 @@ abstract class LocalGameDataBase : RoomDatabase()
     companion object {
         @Volatile
         private var INSTANCE: LocalGameDataBase? = null
+        private val DBNAME = "local_game_database"
 
         fun getDatabase(context: Context): LocalGameDataBase {
             val tempInstance = INSTANCE
@@ -22,7 +23,7 @@ abstract class LocalGameDataBase : RoomDatabase()
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     LocalGameDataBase::class.java,
-                    "local_game_database"
+                    DBNAME
                 ).fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 return instance

@@ -18,8 +18,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class GPTFragment : Fragment()
-{
+class GPTFragment : Fragment() {
     lateinit var chessView: ChessView
     lateinit var gameNameTextView: TextView
 
@@ -29,21 +28,16 @@ class GPTFragment : Fragment()
         .build()
     private val openAIChatAPI = retrofit.create(GPTApi::class.java)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
-    {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val rootView: View = inflater.inflate(R.layout.game_fragment, container, false)
 
         chessView = rootView.findViewById(R.id.chessView)
         chessView.loadBoardFromJson(null)
 
-        //val chatGptMove: Button = rootView.findViewById(R.id.gptMove)
-
         return rootView
     }
 
-
-    fun doAiMove()
-    {
+    fun doAiMove() {
         val jsonBoard: String = chessView.saveBoardToJson()
 
         val messages = listOf(
@@ -55,14 +49,12 @@ class GPTFragment : Fragment()
 
         val requestBody = ChatRequest(messages)
         val call = openAIChatAPI.chatWithGPT3(requestBody)
-        call.enqueue(object : Callback<ChatResponse>
-        {
+        call.enqueue(object : Callback<ChatResponse> {
             override fun onResponse(call: Call<ChatResponse>, response: Response<ChatResponse>) {
-                if (response.isSuccessful)
-                {
+                if (response.isSuccessful) {
                     val chatResponse = response.body()
 
-                    val gptMoveStr:String = chatResponse!!.choices[0].message.content
+                    val gptMoveStr: String = chatResponse!!.choices[0].message.content
 
                     val gson = Gson()
                     val gptMove = gson.fromJson(gptMoveStr, GPTMove::class.java)
@@ -71,12 +63,9 @@ class GPTFragment : Fragment()
 
                     val isMoved = chessView.moveIfCan(gptMove)
 
-                    if(!isMoved) doAiMove()
+                    if (!isMoved) doAiMove()
 
-
-                }
-                else
-                {
+                } else {
                     Log.e("GPT", response.errorBody()!!.string())
                 }
             }

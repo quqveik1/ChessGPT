@@ -6,5 +6,3 @@ data class GPTMove(
     val dx: Int,
     val dy: Int,
 )
-{
-}

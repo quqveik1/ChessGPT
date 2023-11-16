@@ -5,10 +5,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 
 class LocalGameViewModel(application: Application) : AndroidViewModel(application) {
-
     private val repository: LocalGameRepository
     val allGames: LiveData<List<LocalGame>>
-    public val localGameDao: LocalGameDao
+    val localGameDao: LocalGameDao
 
     init {
         localGameDao = LocalGameDataBase.getDatabase(application).localGameDao()
