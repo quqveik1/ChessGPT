@@ -44,3 +44,7 @@ Chess - это шахматное приложение для Android, напи�
 - Retrofit
 - OkHttp
 - Room
+
+------
+- [EN](https://github.com/quqveik1/ChessGPT/blob/main/README_EN.md)
+- [DE](https://github.com/quqveik1/ChessGPT/blob/main/README_DE.md)
